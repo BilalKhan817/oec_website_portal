@@ -1,0 +1,133 @@
+<div class="executives-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">people</mat-icon>
+        Leadership Team
+      </h1>
+      <p class="page-subtitle">Manage executive profiles and team hierarchy</p>
+    </div>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="add-button"
+      (click)="openDialog()">
+      <mat-icon>person_add</mat-icon>
+      Add Executive
+    </button>
+  </div>
+
+  <div class="content-section">
+    <mat-card class="executives-card">
+      <mat-card-header class="card-header">
+        <mat-card-title class="card-title">
+          <mat-icon>corporate_fare</mat-icon>
+          Executive Team
+        </mat-card-title>
+        
+        <div class="header-actions">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search executives...</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Name, position...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          
+          <button mat-icon-button (click)="refreshData()" matTooltip="Refresh" class="refresh-button">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <div class="executives-grid" *ngIf="!isLoading && filteredExecutives.length > 0">
+        <div 
+          *ngFor="let executive of filteredExecutives; let i = index"
+          class="executive-card"
+          [class.inactive]="!executive.is_active">
+          
+          <div class="executive-image-container">
+            <img 
+              [src]="getImageUrl(executive.image_url)" 
+              [alt]="executive.name"
+              class="executive-image"
+              (error)="onImageError($event)">
+            <div class="image-overlay">
+              <button mat-icon-button class="edit-image-btn" (click)="openDialog(executive)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="executive-info">
+            <div class="executive-header">
+              <h3 class="executive-name">{{executive.name}}</h3>
+              <div class="executive-actions">
+                    <button 
+                      mat-icon-button 
+                      color="primary"
+                      (click)="openDialog(executive)"
+                      matTooltip="Edit">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="deleteExecutive(executive)"
+                      matTooltip="Delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+            </div>
+            
+            <p class="executive-position">{{executive.position}}</p>
+            
+            <div class="executive-badge">
+              <mat-chip class="badge-chip">{{executive.badge}}</mat-chip>
+            </div>
+
+            <div class="executive-footer">
+              <a 
+                [href]="executive.profile_url" 
+                target="_blank" 
+                mat-stroked-button 
+                class="profile-link">
+                <mat-icon>open_in_new</mat-icon>
+                View Profile
+              </a>
+
+              <div class="status-indicator">
+                <mat-icon [class.active]="executive.is_active" class="status-icon">
+                  {{executive.is_active ? 'visibility' : 'visibility_off'}}
+                </mat-icon>
+                <span [class.active]="executive.is_active" class="status-text">
+                  {{executive.is_active ? 'Active' : 'Inactive'}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading executives...</p>
+      </div>
+
+      <div *ngIf="!isLoading && executives.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">people</mat-icon>
+        <h3>No Executives Found</h3>
+        <p>Add executive team members to showcase your leadership</p>
+        <button mat-raised-button color="primary" (click)="openDialog()" class="empty-action-button">
+          <mat-icon>person_add</mat-icon>
+          Add Executive
+        </button>
+      </div>
+
+      <div *ngIf="!isLoading && executives.length > 0 && filteredExecutives.length === 0" class="no-results">
+        <mat-icon class="no-results-icon">search_off</mat-icon>
+        <h3>No Results Found</h3>
+        <p>Try adjusting your search terms</p>
+      </div>
+    </mat-card>
+  </div>
+</div>

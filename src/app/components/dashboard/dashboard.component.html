@@ -1,0 +1,120 @@
+<!-- components/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1 class="page-title">
+      <mat-icon class="title-icon">dashboard</mat-icon>
+      Admin Dashboard
+    </h1>
+    <p class="page-subtitle">Manage your content and monitor system performance</p>
+  </div>
+
+  <div class="cards-grid">
+    <mat-card 
+      *ngFor="let card of dashboardCards" 
+      class="dashboard-card"
+      (click)="navigateToModule(card.route)"
+      matRipple>
+      
+      <mat-card-content class="card-content">
+        <div class="card-header">
+          <mat-icon class="card-icon">{{card.icon}}</mat-icon>
+          <div class="card-count" *ngIf="!card.loading && card.count !== undefined">
+            {{card.count}}
+          </div>
+          <mat-spinner 
+            *ngIf="card.loading" 
+            diameter="32" 
+            color="accent">
+          </mat-spinner>
+        </div>
+        
+        <div class="card-text">
+          <h3 class="card-title">{{card.title}}</h3>
+          <p class="card-subtitle">{{card.subtitle}}</p>
+        </div>
+        
+        <div class="card-action">
+          <mat-icon class="action-icon">arrow_forward</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="stats-section">
+    <mat-card class="stats-card">
+      <mat-card-header class="stats-header">
+        <mat-card-title class="stats-title">
+          <mat-icon>analytics</mat-icon>
+          Content Statistics
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content class="stats-content">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon-container announcements">
+              <mat-icon class="stat-icon">campaign</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-number">{{totalAnnouncements}}</span>
+              <span class="stat-label">Announcements</span>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon-container banners">
+              <mat-icon class="stat-icon">wallpaper</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-number">{{activeBanners}}</span>
+              <span class="stat-label">Active Banners</span>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon-container executives">
+              <mat-icon class="stat-icon">people</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-number">{{totalExecutives}}</span>
+              <span class="stat-label">Executives</span>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon-container services">
+              <mat-icon class="stat-icon">miscellaneous_services</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="stat-number">{{totalServices}}</span>
+              <span class="stat-label">Services</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="activity-card">
+      <mat-card-header class="activity-header">
+        <mat-card-title class="activity-title">
+          <mat-icon>update</mat-icon>
+          Recent Activity
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content class="activity-content">
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of recentActivity">
+            <div class="activity-icon-container" [ngClass]="activity.type">
+              <mat-icon class="activity-icon">{{activity.icon}}</mat-icon>
+            </div>
+            <div class="activity-details">
+              <span class="activity-text">{{activity.text}}</span>
+              <span class="activity-time">{{activity.time}}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

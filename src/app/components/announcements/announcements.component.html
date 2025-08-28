@@ -1,0 +1,152 @@
+<div class="announcements-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">campaign</mat-icon>
+        Announcements
+      </h1>
+      <p class="page-subtitle">Manage site announcements and notifications</p>
+    </div>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="add-button"
+      (click)="openDialog()">
+      <mat-icon>add</mat-icon>
+      New Announcement
+    </button>
+  </div>
+
+  <div class="content-section">
+    <mat-card class="table-card">
+      <mat-card-header class="card-header">
+        <mat-card-title class="card-title">
+          <mat-icon>list</mat-icon>
+          All Announcements
+        </mat-card-title>
+        
+        <div class="header-actions">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search announcements...</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Title, category...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          
+          <button mat-icon-button (click)="refreshData()" matTooltip="Refresh" class="refresh-button">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="announcements-table">
+          
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">title</mat-icon>
+              Title
+            </th>
+            <td mat-cell *matCellDef="let announcement" class="title-cell">
+              <div class="title-content">
+                <span class="title-text">{{announcement.title}}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">category</mat-icon>
+              Category
+            </th>
+            <td mat-cell *matCellDef="let announcement">
+              <mat-chip class="category-chip">{{announcement.announcement_category}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="deadline">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">schedule</mat-icon>
+              Deadline
+            </th>
+            <td mat-cell *matCellDef="let announcement">
+              <div class="deadline-cell">
+                <span class="deadline-date">{{announcement.deadline | date:'MMM d, yyyy'}}</span>
+                <span class="deadline-time">{{announcement.deadline | date:'h:mm a'}}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="buttons">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              <mat-icon class="header-icon">link</mat-icon>
+              Action Buttons
+            </th>
+            <td mat-cell *matCellDef="let announcement">
+              <div class="buttons-cell">
+                <mat-chip class="button-chip orange">{{announcement.orange_button_title}}</mat-chip>
+                <mat-chip class="button-chip blue">{{announcement.blue_button_title}}</mat-chip>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">event</mat-icon>
+              Created
+            </th>
+            <td mat-cell *matCellDef="let announcement">
+              <span class="created-date">{{announcement.createdAt | date:'MMM d, yyyy'}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="header-cell actions-header">Actions</th>
+                <td mat-cell *matCellDef="let announcement" class="actions-cell">
+                  <div class="action-buttons">
+                    <button 
+                      mat-icon-button 
+                      color="primary"
+                      (click)="openDialog(announcement)"
+                      matTooltip="Edit">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      color="warn"
+                      (click)="deleteAnnouncement(announcement)"
+                      matTooltip="Delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        </table>
+
+        <div *ngIf="isLoading" class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Loading announcements...</p>
+        </div>
+
+        <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
+          <mat-icon class="empty-icon">campaign</mat-icon>
+          <h3>No Announcements Found</h3>
+          <p>Create your first announcement to get started</p>
+          <button mat-raised-button color="primary" (click)="openDialog()" class="empty-action-button">
+            <mat-icon>add</mat-icon>
+            Create Announcement
+          </button>
+        </div>
+      </div>
+
+      <mat-paginator 
+        [pageSizeOptions]="[5, 10, 20]" 
+        showFirstLastButtons
+        class="paginator">
+      </mat-paginator>
+    </mat-card>
+  </div>
+</div>

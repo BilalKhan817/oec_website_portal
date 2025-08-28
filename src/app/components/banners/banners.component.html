@@ -1,0 +1,165 @@
+<div class="banners-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">wallpaper</mat-icon>
+        Hero Banners
+      </h1>
+      <p class="page-subtitle">Manage homepage banner content and layouts</p>
+    </div>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="add-button"
+      (click)="openDialog()">
+      <mat-icon>add</mat-icon>
+      New Banner
+    </button>
+  </div>
+
+  <div class="content-section">
+    <mat-card class="table-card">
+      <mat-card-header class="card-header">
+        <mat-card-title class="card-title">
+          <mat-icon>view_carousel</mat-icon>
+          All Banners
+        </mat-card-title>
+        
+        <div class="header-actions">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search banners...</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Title, buttons...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          
+          <button mat-icon-button (click)="refreshData()" matTooltip="Refresh" class="refresh-button">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="banners-table">
+          
+          <ng-container matColumnDef="preview">
+            <th mat-header-cell *matHeaderCellDef class="header-cell preview-header">
+              <mat-icon class="header-icon">image</mat-icon>
+              Preview
+            </th>
+            <td mat-cell *matCellDef="let banner" class="preview-cell">
+              <div class="banner-preview" [style.background-image]="'url(' + getImageUrl(banner.background_image) + ')'">
+                <div class="preview-overlay">
+                  <span class="preview-title">{{banner.banner_title}}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">title</mat-icon>
+              Title
+            </th>
+            <td mat-cell *matCellDef="let banner" class="title-cell">
+              <div class="title-content">
+                <span class="title-text">{{banner.banner_title}}</span>
+                <span class="subtitle-text" *ngIf="getSubtitleText(banner)">
+                  {{getSubtitleText(banner)}}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="buttons">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              <mat-icon class="header-icon">smart_button</mat-icon>
+              Action Buttons
+            </th>
+            <td mat-cell *matCellDef="let banner">
+              <div class="buttons-cell">
+                <mat-chip class="button-chip green">{{banner.green_button}}</mat-chip>
+                <mat-chip class="button-chip gray">{{banner.gray_button}}</mat-chip>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              <mat-icon class="header-icon">visibility</mat-icon>
+              Status
+            </th>
+            <td mat-cell *matCellDef="let banner">
+              <div class="status-cell">
+                <mat-slide-toggle 
+                  [checked]="banner.is_active"
+                  (change)="toggleBannerStatus(banner)"
+                  [color]="banner.is_active ? 'primary' : 'warn'">
+                </mat-slide-toggle>
+                <span class="status-label" [class.active]="banner.is_active">
+                  {{banner.is_active ? 'Active' : 'Inactive'}}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">event</mat-icon>
+              Created
+            </th>
+            <td mat-cell *matCellDef="let banner">
+              <span class="created-date">{{banner.createdAt | date:'MMM d, yyyy'}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="header-cell actions-header">Actions</th>
+            <td mat-cell *matCellDef="let banner" class="actions-cell">
+              <div class="action-buttons">
+                <button 
+                  mat-icon-button 
+                  class="action-button edit-button"
+                  (click)="openDialog(banner)"
+                  matTooltip="Edit">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  class="action-button delete-button"
+                  (click)="deleteBanner(banner)"
+                  matTooltip="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        </table>
+
+        <div *ngIf="isLoading" class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Loading banners...</p>
+        </div>
+
+        <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
+          <mat-icon class="empty-icon">wallpaper</mat-icon>
+          <h3>No Banners Found</h3>
+          <p>Create your first hero banner to get started</p>
+          <button mat-raised-button color="primary" (click)="openDialog()" class="empty-action-button">
+            <mat-icon>add</mat-icon>
+            Create Banner
+          </button>
+        </div>
+      </div>
+
+      <mat-paginator 
+        [pageSizeOptions]="[5, 10, 20]" 
+        showFirstLastButtons
+        class="paginator">
+      </mat-paginator>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<!-- components/sidebar/sidebar.component.html -->
+<div class="sidebar-content">
+  <div class="sidebar-header">
+    <div class="header-info">
+      <h3 class="sidebar-title">Content Management</h3>
+      <p class="sidebar-subtitle">Manage your home page content</p>
+    </div>
+  </div>
+
+  <nav class="nav-section">
+    <div class="nav-list">
+      <div 
+        *ngFor="let item of menuItems" 
+        class="nav-item"
+        [class.active]="isActive(item.route)"
+        (click)="navigate(item.route)">
+        
+        <div class="nav-item-wrapper">
+          <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
+          <div class="nav-content">
+            <span class="nav-title">{{item.title}}</span>
+            <span class="nav-description">{{item.description}}</span>
+          </div>
+          <mat-icon class="nav-arrow" *ngIf="isActive(item.route)">chevron_right</mat-icon>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="quick-stats">
+      <h4 class="stats-title">Quick Stats</h4>
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-number">5</span>
+          <span class="stat-label">Modules</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-status">API</span>
+          <span class="stat-label">Ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,152 @@
+<div class="about-oec-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">business</mat-icon>
+        About OEC
+      </h1>
+      <p class="page-subtitle">Manage company information and promotional content</p>
+    </div>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="action-button"
+      (click)="openDialog()"
+      *ngIf="aboutOecData">
+      <mat-icon>edit</mat-icon>
+      Edit Content
+    </button>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="action-button"
+      (click)="createAboutOec()"
+      *ngIf="!aboutOecData && !isLoading">
+      <mat-icon>add</mat-icon>
+      Create About Section
+    </button>
+  </div>
+
+  <div class="content-section" *ngIf="!isLoading">
+    <!-- About OEC Content Card -->
+    <mat-card class="about-card" *ngIf="aboutOecData">
+      <mat-card-header class="card-header">
+        <div class="header-info">
+          <mat-card-title class="card-title">{{aboutOecData.title}}</mat-card-title>
+          <mat-card-subtitle class="card-subtitle">{{aboutOecData.subtitle}}</mat-card-subtitle>
+        </div>
+        
+        <div class="header-actions">
+          <mat-chip class="status-chip active" *ngIf="aboutOecData.is_active">
+            <mat-icon>visibility</mat-icon>
+            Active
+          </mat-chip>
+          <mat-chip class="status-chip inactive" *ngIf="!aboutOecData.is_active">
+            <mat-icon>visibility_off</mat-icon>
+            Inactive
+          </mat-chip>
+          <button mat-icon-button class="edit-button" (click)="openDialog()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content class="card-content">
+        <div class="content-grid">
+          <!-- Text Content -->
+          <div class="text-section">
+            <div class="text-block">
+              <h4 class="block-title">
+                <mat-icon>description</mat-icon>
+                Description - Paragraph 1
+              </h4>
+              <p class="content-text">{{aboutOecData.description_paragraph_1}}</p>
+            </div>
+
+            <div class="text-block">
+              <h4 class="block-title">
+                <mat-icon>description</mat-icon>
+                Description - Paragraph 2
+              </h4>
+              <p class="content-text">{{aboutOecData.description_paragraph_2}}</p>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat-item">
+                <div class="stat-icon-container established">
+                  <mat-icon class="stat-icon">event</mat-icon>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-label">Established</span>
+                  <span class="stat-value">{{aboutOecData.established_year}}</span>
+                </div>
+              </div>
+
+              <div class="stat-item">
+                <div class="stat-icon-container workers">
+                  <mat-icon class="stat-icon">people</mat-icon>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-label">Workers Sent</span>
+                  <span class="stat-value">{{aboutOecData.workers_sent}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Section -->
+          <div class="video-section">
+            <div class="video-header">
+              <h4 class="block-title">
+                <mat-icon>play_circle</mat-icon>
+                Featured Video
+              </h4>
+              <p class="video-title">{{aboutOecData.video_title}}</p>
+            </div>
+
+            <div class="video-container">
+              <div class="video-thumbnail" [style.background-image]="'url(' + getYoutubeThumbnail(aboutOecData.youtube_video_id) + ')'">
+                <div class="video-overlay">
+                  <mat-icon class="play-icon">play_circle_filled</mat-icon>
+                  <p class="video-id">ID: {{aboutOecData.youtube_video_id}}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cta-section">
+              <a 
+                [href]="aboutOecData.button_link" 
+                mat-raised-button 
+                color="primary"
+                class="cta-button"
+                target="_blank">
+                <mat-icon>open_in_new</mat-icon>
+                {{aboutOecData.button_text}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Empty State -->
+    <mat-card class="empty-card" *ngIf="!aboutOecData">
+      <mat-card-content class="empty-content">
+        <mat-icon class="empty-icon">business</mat-icon>
+        <h3>About OEC Section Not Set Up</h3>
+        <p>Create the About OEC section to showcase your company information, video content, and key statistics</p>
+        <button mat-raised-button color="primary" (click)="createAboutOec()" class="empty-action-button">
+          <mat-icon>add</mat-icon>
+          Set Up About Section
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading About OEC content...</p>
+  </div>
+</div>

@@ -1,0 +1,145 @@
+<div class="services-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">miscellaneous_services</mat-icon>
+        Services Management
+      </h1>
+      <p class="page-subtitle">Configure service offerings and descriptions</p>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        mat-stroked-button 
+        color="primary" 
+        class="edit-section-button"
+        (click)="editSection()"
+        *ngIf="servicesData">
+        <mat-icon>edit</mat-icon>
+        Edit Section
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="add-button"
+        (click)="openServiceDialog()"
+        *ngIf="servicesData">
+        <mat-icon>add</mat-icon>
+        Add Service
+      </button>
+    </div>
+  </div>
+
+  <div class="content-section" *ngIf="!isLoading">
+    <!-- Section Header Card -->
+    <mat-card class="section-header-card" *ngIf="servicesData">
+      <mat-card-content class="section-content">
+        <div class="section-info">
+          <h2 class="section-title">{{servicesData.section_title}}</h2>
+          <p class="section-subtitle">{{servicesData.section_subtitle}}</p>
+        </div>
+        <div class="section-actions">
+          <button mat-icon-button class="section-edit-button" (click)="editSection()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Services Grid -->
+    <mat-card class="services-card" *ngIf="servicesData && servicesData.services && servicesData.services.length > 0">
+      <mat-card-header class="card-header">
+        <mat-card-title class="card-title">
+          <mat-icon>grid_view</mat-icon>
+          Service Items ({{servicesData.services?.length || 0}})
+        </mat-card-title>
+        
+        <div class="header-actions">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search services...</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Title, description...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          
+          <button mat-icon-button (click)="refreshData()" matTooltip="Refresh" class="refresh-button">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <div class="services-grid">
+        <div 
+          *ngFor="let service of filteredServices; let i = index"
+          class="service-card">
+          
+          <div class="service-header">
+            <div class="service-icon-container">
+              <mat-icon class="service-icon">{{service.icon}}</mat-icon>
+            </div>
+            
+            <div class="service-actions">
+                  <span class="service-order">#{{service.order || i + 1}}</span>
+                  <button 
+                    mat-icon-button 
+                    color="primary"
+                    (click)="openServiceDialog(service, i)"
+                    matTooltip="Edit Service">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button 
+                    mat-icon-button 
+                    color="warn"
+                    (click)="deleteService(i)"
+                    matTooltip="Delete Service">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+          </div>
+
+          <div class="service-content">
+            <h3 class="service-title">{{service.title}}</h3>
+            <p class="service-description">{{service.description}}</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Empty State -->
+    <mat-card class="empty-card" *ngIf="servicesData && (!servicesData.services || servicesData.services.length === 0)">
+      <mat-card-content class="empty-content">
+        <mat-icon class="empty-icon">miscellaneous_services</mat-icon>
+        <h3>No Services Found</h3>
+        <p>Add services to showcase what your organization offers</p>
+        <button mat-raised-button color="primary" (click)="openServiceDialog()" class="empty-action-button">
+          <mat-icon>add</mat-icon>
+          Add First Service
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- No Services Data -->
+    <mat-card class="setup-card" *ngIf="!servicesData">
+      <mat-card-content class="setup-content">
+        <mat-icon class="setup-icon">settings</mat-icon>
+        <h3>Services Section Not Set Up</h3>
+        <p>Create the services section to start adding your service offerings</p>
+        <button mat-raised-button color="primary" (click)="createInitialServices()" class="setup-action-button">
+          <mat-icon>add</mat-icon>
+          Set Up Services Section
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- No Results -->
+    <div *ngIf="servicesData && servicesData.services && servicesData.services.length > 0 && filteredServices.length === 0" class="no-results">
+      <mat-icon class="no-results-icon">search_off</mat-icon>
+      <h3>No Results Found</h3>
+      <p>Try adjusting your search terms</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading services...</p>
+  </div>
+</div>
