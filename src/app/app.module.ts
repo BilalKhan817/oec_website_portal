@@ -37,6 +37,7 @@ import { AnnouncementsComponent } from './components/announcements/announcements
 import { BannersComponent } from './components/banners/banners.component';
 import { AboutOecComponent } from './components/about-oec/about-oec.component';
 import { ExecutivesComponent } from './components/executives/executives.component';
+import { BoardDirectorsComponent } from './components/board-directors/board-directors.component';
 import { ServicesComponent } from './components/services/services.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ApiComponent } from './components/services/api/api.component';
@@ -58,6 +59,7 @@ const routes:any = [
   { path: 'banners', component: BannersComponent },
   { path: 'about-oec', component: AboutOecComponent },
   { path: 'executives', component: ExecutivesComponent },
+  { path: 'board-directors', component: BoardDirectorsComponent },
   { path: 'services', component: ServicesComponent },
   { path: 'api', component: ApiComponent },
   { path: '**', redirectTo: '/dashboard' }
@@ -71,6 +73,7 @@ const routes:any = [
     BannersComponent,
     AboutOecComponent,
     ExecutivesComponent,
+    BoardDirectorsComponent,
     ServicesComponent,
     SidebarComponent,
     ApiComponent,

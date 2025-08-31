@@ -92,6 +92,15 @@ export interface Services {
   updatedAt?: Date;
 }
 
+export interface BoardMember {
+  _id?: string;
+  name: string;
+  designation: string;
+  representing: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -203,5 +212,22 @@ export class ApiService {
 
   deleteServices(id: string): Observable<ApiResponse<Services>> {
     return this.http.delete<ApiResponse<Services>>(`${this.baseUrl}/services/${id}`);
+  }
+
+  // Board Members
+  getBoardMembers(): Observable<ApiResponse<BoardMember[]>> {
+    return this.http.get<ApiResponse<BoardMember[]>>(`${this.baseUrl}/about-us/board-of-directors`);
+  }
+
+  createBoardMember(boardMember: BoardMember): Observable<ApiResponse<BoardMember>> {
+    return this.http.post<ApiResponse<BoardMember>>(`${this.baseUrl}/about-us/board-of-directors`, boardMember);
+  }
+
+  updateBoardMember(id: string, boardMember: BoardMember): Observable<ApiResponse<BoardMember>> {
+    return this.http.put<ApiResponse<BoardMember>>(`${this.baseUrl}/about-us/board-of-directors/${id}`, boardMember);
+  }
+
+  deleteBoardMember(id: string): Observable<ApiResponse<BoardMember>> {
+    return this.http.delete<ApiResponse<BoardMember>>(`${this.baseUrl}/about-us/board-of-directors/${id}`);
   }
 }

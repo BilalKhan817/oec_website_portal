@@ -47,6 +47,12 @@ export class SidebarComponent {
       description: 'Executive team'
     },
     {
+      title: 'Board of Directors',
+      icon: 'groups',
+      route: '/board-directors',
+      description: 'Board members'
+    },
+    {
       title: 'Services',
       icon: 'miscellaneous_services',
       route: '/services',
