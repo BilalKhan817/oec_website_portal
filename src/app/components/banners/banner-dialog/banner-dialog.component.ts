@@ -246,7 +246,7 @@ import { ApiService, Banner } from '../../../services/api.service';
     }
 
     .dialog-title {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #047857 0%, #22c395 100%);
       color: white;
       margin: 0;
       padding: 24px 32px;

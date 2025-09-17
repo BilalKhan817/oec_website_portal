@@ -11,17 +11,31 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
+export interface Attachment {
+  _id?: string;
+  file_title: string;
+  icon: string;
+  attachment_type: string;
+  file_path: string;
+  file_url: string;
+  original_name: string;
+  file_size: number;
+  mime_type: string;
+}
+
 export interface Announcement {
   _id?: string;
   title: string;
-  deadline: Date;
+  deadline: string;
   announcement_category: string;
   orange_button_title: string;
   orange_button_link: string;
-  blue_button_title: string;
-  blue_button_link: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  blue_button_title?: string;
+  blue_button_link?: string;
+  flag?: string; // Picture in announcement title
+  attachments?: Attachment[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Banner {
@@ -105,30 +119,60 @@ export interface BoardMember {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:3000/api'; // Adjust this to your actual API base URL
+  public MainbaseUrl = 'https://oec.gov.pk'
+  private baseUrl = 'https://oec.gov.pk/api'; // Update this to your API URL
+  
+  // public MainbaseUrl = 'http://localhost:3000'
+  // public baseUrl = 'http://localhost:3000/api'; // Update this to your API URL
 
   constructor(private http: HttpClient) {}
 
   // Announcements
-  getAnnouncements(): Observable<ApiResponse<Announcement[]>> {
-    return this.http.get<ApiResponse<Announcement[]>>(`${this.baseUrl}/announcements`);
-  }
+  createAnnouncementWithFiles(formData: FormData): Observable<ApiResponse<Announcement>> {
+  return this.http.post<ApiResponse<Announcement>>(`${this.baseUrl}/announcements`, formData);
+}
 
-  getAnnouncement(id: string): Observable<ApiResponse<Announcement>> {
-    return this.http.get<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`);
-  }
+/**
+ * Update announcement with file uploads
+ */
+updateAnnouncementWithFiles(id: string, formData: FormData): Observable<ApiResponse<Announcement>> {
+  return this.http.put<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`, formData);
+}
 
-  createAnnouncement(announcement: Announcement): Observable<ApiResponse<Announcement>> {
-    return this.http.post<ApiResponse<Announcement>>(`${this.baseUrl}/announcements`, announcement);
-  }
+/**
+ * Delete specific attachment from announcement
+ */
+deleteAttachment(announcementId: string, attachmentId: string): Observable<ApiResponse<Announcement>> {
+  return this.http.delete<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${announcementId}/attachments/${attachmentId}`);
+}
 
-  updateAnnouncement(id: string, announcement: Partial<Announcement>): Observable<ApiResponse<Announcement>> {
-    return this.http.put<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`, announcement);
-  }
+/**
+ * Get download URL for attachment
+ */
+getAttachmentDownloadUrl(announcementId: string, attachmentId: string): string {
+  return `${this.baseUrl}/announcements/${announcementId}/attachments/${attachmentId}/download`;
+}
 
-  deleteAnnouncement(id: string): Observable<ApiResponse<Announcement>> {
-    return this.http.delete<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`);
-  }
+// Your existing methods remain unchanged:
+getAnnouncements(): Observable<ApiResponse<Announcement[]>> {
+  return this.http.get<ApiResponse<Announcement[]>>(`${this.baseUrl}/announcements`);
+}
+
+getAnnouncement(id: string): Observable<ApiResponse<Announcement>> {
+  return this.http.get<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`);
+}
+
+createAnnouncement(announcement: Announcement): Observable<ApiResponse<Announcement>> {
+  return this.http.post<ApiResponse<Announcement>>(`${this.baseUrl}/announcements`, announcement);
+}
+
+updateAnnouncement(id: string, announcement: Partial<Announcement>): Observable<ApiResponse<Announcement>> {
+  return this.http.put<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`, announcement);
+}
+
+deleteAnnouncement(id: string): Observable<ApiResponse<Announcement>> {
+  return this.http.delete<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`);
+}
 
   // Banners
   getBanners(): Observable<ApiResponse<Banner[]>> {

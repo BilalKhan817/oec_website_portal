@@ -163,7 +163,7 @@ import { ApiService, Executive } from '../../../services/api.service';
     }
 
     .dialog-title {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #047857 0%, #22c395 100%);
       color: white;
       margin: 0;
       padding: 24px 32px;

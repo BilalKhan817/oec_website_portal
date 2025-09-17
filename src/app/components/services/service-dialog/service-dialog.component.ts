@@ -249,7 +249,7 @@ interface DialogData {
     }
 
     .dialog-title {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      background: linear-gradient(135deg, #047857 0%, #22c395 100%);
       color: white;
       margin: 0;
       padding: 24px 32px;
