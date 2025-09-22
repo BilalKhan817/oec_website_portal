@@ -141,9 +141,20 @@ export class AnnouncementsComponent implements OnInit {
 
   // Helper methods for table display
 
-  getCategoryClass(category: string): string {
-    return category.toLowerCase();
+getCategoryClass(category: string | null | undefined): string {
+  if (!category) {
+    return 'default-category'; // or return empty string ''
   }
+  return category.toLowerCase();
+}
+getFlagClass(flag: string | null | undefined): string {
+  if (!flag) {
+    return 'no-flag';
+  }
+  // You might want to extract category from flag path or use a different logic
+  // For now, returning a generic class
+  return 'has-flag';
+}
 
   getAttachmentIcon(attachmentType: string, icon?: string): string {
     if (attachmentType === 'link') {
