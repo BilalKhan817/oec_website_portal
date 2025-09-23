@@ -315,15 +315,12 @@ import { ApiService, Announcement } from '../../../services/api.service';
           <!-- Expiry Date -->
           <div class="form-field">
             <label class="field-label">
-              Expiry Date <span class="required">*</span>
+              Expiry Date 
             </label>
             <mat-form-field appearance="outline" class="full-width">
               <input matInput [matDatepicker]="picker" formControlName="deadline" placeholder="mm/dd/yyyy">
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
-              <mat-error *ngIf="announcementForm.get('deadline')?.hasError('required')">
-                Expiry date is required
-              </mat-error>
             </mat-form-field>
           </div>
 
@@ -334,9 +331,6 @@ import { ApiService, Announcement } from '../../../services/api.service';
             </label>
             <mat-form-field appearance="outline" class="full-width">
               <input matInput formControlName="orange_button_title" placeholder="Advertise Attachment">
-              <mat-error *ngIf="announcementForm.get('orange_button_title')?.hasError('required')">
-                Button title is required
-              </mat-error>
             </mat-form-field>
           </div>
 
@@ -347,9 +341,6 @@ import { ApiService, Announcement } from '../../../services/api.service';
             </label>
             <mat-form-field appearance="outline" class="full-width">
               <input matInput formControlName="orange_button_link" placeholder="Advertise Attachment">
-              <mat-error *ngIf="announcementForm.get('orange_button_link')?.hasError('required')">
-                Button URL is required
-              </mat-error>
             </mat-form-field>
           </div>
 
@@ -678,8 +669,8 @@ export class AnnouncementDialogComponent implements OnInit {
       title: [data?.title || '', [Validators.required]],
       deadline: [data?.deadline ? new Date(data.deadline) : ''],
       announcement_category: [data?.announcement_category || '', [Validators.required]],
-      orange_button_title: [data?.orange_button_title || '', [Validators.required]],
-      orange_button_link: [data?.orange_button_link || '', [Validators.required]],
+      orange_button_title: [data?.orange_button_title || '',],
+      orange_button_link: [data?.orange_button_link || '', ],
       blue_button_title: [data?.blue_button_title || ''],
       blue_button_link: [data?.blue_button_link || ''],
       attachments: this.fb.array([])

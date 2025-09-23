@@ -105,6 +105,7 @@ export class BoardDirectorsComponent implements OnInit {
         // Update existing member
         this.apiService.updateBoardMember(this.editingMember._id!, formValue).subscribe({
           next: (response: any) => {
+            // console.log(response)
             if (response.success) {
               this.loadBoardMembers();
               this.showSnackBar('Board member updated successfully');
@@ -120,6 +121,7 @@ export class BoardDirectorsComponent implements OnInit {
         // Create new member
         this.apiService.createBoardMember(formValue).subscribe({
           next: (response: any) => {
+            // console.log(response)
             if (response.success) {
               this.loadBoardMembers();
               this.showSnackBar('Board member created successfully');
