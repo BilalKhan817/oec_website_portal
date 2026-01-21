@@ -152,6 +152,34 @@ export interface MenuItem {
   items?: SubItem[];
   is_active?: boolean;
   order?: number;
+}
+export interface AboutUsContent {
+  _id?: string;
+  page_title: string;
+  organization_name: string;
+  established_year: string;
+  ministry_name: string;
+  introduction_title: string;
+  introduction_content: string;
+  legal_mandate_title: string;
+  legal_mandate_items: { text: string }[];
+  our_role_title: string;
+  our_role_items: { text: string }[];
+  target_sectors_title: string;
+  target_sectors_items: { icon: string; text: string }[];
+  unique_strength_title: string;
+  unique_strength_items: { text: string }[];
+  vision_title: string;
+  vision_content: string;
+  mission_title: string;
+  mission_content: string;
+  core_values_title: string;
+  core_values_items: { text: string }[];
+  impact_title: string;
+  impact_items: { text: string }[];
+  future_goals_title: string;
+  future_goals_items: { text: string }[];
+  is_active: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -165,7 +193,125 @@ export interface TopBarButton {
   button_style?: 'default' | 'highlight';
   show_on_mobile?: boolean;
   is_active?: boolean;
-  order?: number;
+  order?: number;}
+export interface OecAtGlance {
+  _id?: string;
+  page_title: string;
+  page_subtitle: string;
+  establishment_icon: string;
+  establishment_label: string;
+  establishment_year: string;
+  establishment_note: string;
+  legal_icon: string;
+  legal_label: string;
+  legal_items: { text: string }[];
+  headquarters_icon: string;
+  headquarters_label: string;
+  headquarters_items: { text: string }[];
+  workforce_icon: string;
+  workforce_label: string;
+  workforce_value: string;
+  workforce_countries: { country: string; flag: string }[];
+  job_seekers_icon: string;
+  job_seekers_label: string;
+  job_seekers_value: string;
+  job_seekers_note: string;
+  employers_icon: string;
+  employers_label: string;
+  employers_value: string;
+  programs_icon: string;
+  programs_label: string;
+  programs_items: { text: string }[];
+  training_icon: string;
+  training_label: string;
+  training_items: { text: string }[];
+  tech_icon: string;
+  tech_label: string;
+  tech_items: { text: string }[];
+  functions_icon: string;
+  functions_label: string;
+  functions_steps: { icon: string; label: string; description: string }[];
+  org_structure_icon: string;
+  org_structure_label: string;
+  org_structure_items: { text: string }[];
+  is_active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface GoverningLaw {
+  _id?: string;
+  page_title: string;
+  statutory_status_title: string;
+  statutory_status_intro: string;
+  statutory_status_items: { text: string }[];
+  regulatory_oversight_title: string;
+  regulatory_oversight_intro: string;
+  regulatory_oversight_items: { text: string; nested_items: { text: string }[] }[];
+  licensing_title: string;
+  licensing_items: { text: string }[];
+  legal_obligations_title: string;
+  legal_obligations_table: { regulation: string; purpose: string }[];
+  protection_measures_title: string;
+  protection_measures_items: { text: string }[];
+  is_active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface OurFunctions {
+  _id?: string;
+  page_title: string;
+  strategic_role_title: string;
+  strategic_role_content: string;
+  key_functions_title: string;
+  key_functions_items: {
+    title: string;
+    items: {
+      text: string;
+      nested_items: { text: string }[];
+    }[];
+  }[];
+  is_active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ContactUs {
+  _id?: string;
+  page_title: string;
+  headquarters_section: {
+    title: string;
+    icon: string;
+    address: string;
+    phone: string;
+    email: string;
+    map_embed_url?: string;
+  };
+  regional_offices_section: {
+    title: string;
+    icon: string;
+    offices: {
+      city: string;
+      address: string;
+      phone: string;
+      email: string;
+      map_embed_url?: string;
+    }[];
+  };
+  travel_office_section: {
+    title: string;
+    icon: string;
+    address: string;
+    phone: string;
+    map_embed_url?: string;
+  };
+  feedback_section: {
+    title: string;
+    icon: string;
+    description: string;
+  };
+  is_active: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -174,11 +320,13 @@ export interface TopBarButton {
   providedIn: 'root'
 })
 export class ApiService {
-  // public MainbaseUrl = 'https://oec.gov.pk'
-  //  private baseUrl = 'https://oec.gov.pk/api'; 
+  public MainbaseUrl = 'https://oec.gov.pk'
+   private baseUrl = 'https://oec.gov.pk/api'; 
   
-  public MainbaseUrl = 'http://localhost:3000'
-   public baseUrl = 'http://localhost:3000/api'; // Update this to your API URL
+  // public MainbaseUrl = 'http://localhost:3000'
+  //  public baseUrl = 'http://localhost:3000/api'; // Update this to your API URL
+  // private baseUrl = 'https://oec.gov.pk/api';
+
 
   constructor(private http: HttpClient) {}
 
@@ -869,5 +1017,109 @@ deleteAnnouncement(id: string): Observable<ApiResponse<Announcement>> {
 
   reorderNavbarSubmenus(submenuOrders: any[]): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.baseUrl}/navbar/submenus/reorder/bulk`, { submenuOrders });
+  }
+  // About Us Content
+  getAboutUsContent(): Observable<ApiResponse<AboutUsContent>> {
+    return this.http.get<ApiResponse<AboutUsContent>>(`${this.baseUrl}/about-us/content`);
+  }
+
+  getAboutUsContentById(id: string): Observable<ApiResponse<AboutUsContent>> {
+    return this.http.get<ApiResponse<AboutUsContent>>(`${this.baseUrl}/about-us/content/${id}`);
+  }
+
+  createAboutUsContent(content: AboutUsContent): Observable<ApiResponse<AboutUsContent>> {
+    return this.http.post<ApiResponse<AboutUsContent>>(`${this.baseUrl}/about-us/content`, content);
+  }
+
+  updateAboutUsContent(id: string, content: Partial<AboutUsContent>): Observable<ApiResponse<AboutUsContent>> {
+    return this.http.put<ApiResponse<AboutUsContent>>(`${this.baseUrl}/about-us/content/${id}`, content);
+  }
+
+  deleteAboutUsContent(id: string): Observable<ApiResponse<AboutUsContent>> {
+    return this.http.delete<ApiResponse<AboutUsContent>>(`${this.baseUrl}/about-us/content/${id}`);
+  }
+
+  // OEC at Glance Content
+  getOecAtGlance(): Observable<ApiResponse<OecAtGlance>> {
+    return this.http.get<ApiResponse<OecAtGlance>>(`${this.baseUrl}/about-us/oec-at-glance`);
+  }
+
+  getOecAtGlanceById(id: string): Observable<ApiResponse<OecAtGlance>> {
+    return this.http.get<ApiResponse<OecAtGlance>>(`${this.baseUrl}/about-us/oec-at-glance/${id}`);
+  }
+
+  createOecAtGlance(content: OecAtGlance): Observable<ApiResponse<OecAtGlance>> {
+    return this.http.post<ApiResponse<OecAtGlance>>(`${this.baseUrl}/about-us/oec-at-glance`, content);
+  }
+
+  updateOecAtGlance(id: string, content: Partial<OecAtGlance>): Observable<ApiResponse<OecAtGlance>> {
+    return this.http.put<ApiResponse<OecAtGlance>>(`${this.baseUrl}/about-us/oec-at-glance/${id}`, content);
+  }
+
+  deleteOecAtGlance(id: string): Observable<ApiResponse<OecAtGlance>> {
+    return this.http.delete<ApiResponse<OecAtGlance>>(`${this.baseUrl}/about-us/oec-at-glance/${id}`);
+  }
+
+  // Governing Law Content
+  getGoverningLaw(): Observable<ApiResponse<GoverningLaw>> {
+    return this.http.get<ApiResponse<GoverningLaw>>(`${this.baseUrl}/about-us/governing-law`);
+  }
+
+  getGoverningLawById(id: string): Observable<ApiResponse<GoverningLaw>> {
+    return this.http.get<ApiResponse<GoverningLaw>>(`${this.baseUrl}/about-us/governing-law/${id}`);
+  }
+
+  createGoverningLaw(content: GoverningLaw): Observable<ApiResponse<GoverningLaw>> {
+    return this.http.post<ApiResponse<GoverningLaw>>(`${this.baseUrl}/about-us/governing-law`, content);
+  }
+
+  updateGoverningLaw(id: string, content: Partial<GoverningLaw>): Observable<ApiResponse<GoverningLaw>> {
+    return this.http.put<ApiResponse<GoverningLaw>>(`${this.baseUrl}/about-us/governing-law/${id}`, content);
+  }
+
+  deleteGoverningLaw(id: string): Observable<ApiResponse<GoverningLaw>> {
+    return this.http.delete<ApiResponse<GoverningLaw>>(`${this.baseUrl}/about-us/governing-law/${id}`);
+  }
+
+  // Our Functions Content
+  getOurFunctions(): Observable<ApiResponse<OurFunctions>> {
+    return this.http.get<ApiResponse<OurFunctions>>(`${this.baseUrl}/about-us/our-functions`);
+  }
+
+  getOurFunctionsById(id: string): Observable<ApiResponse<OurFunctions>> {
+    return this.http.get<ApiResponse<OurFunctions>>(`${this.baseUrl}/about-us/our-functions/${id}`);
+  }
+
+  createOurFunctions(content: OurFunctions): Observable<ApiResponse<OurFunctions>> {
+    return this.http.post<ApiResponse<OurFunctions>>(`${this.baseUrl}/about-us/our-functions`, content);
+  }
+
+  updateOurFunctions(id: string, content: Partial<OurFunctions>): Observable<ApiResponse<OurFunctions>> {
+    return this.http.put<ApiResponse<OurFunctions>>(`${this.baseUrl}/about-us/our-functions/${id}`, content);
+  }
+
+  deleteOurFunctions(id: string): Observable<ApiResponse<OurFunctions>> {
+    return this.http.delete<ApiResponse<OurFunctions>>(`${this.baseUrl}/about-us/our-functions/${id}`);
+  }
+
+  // Contact Us Content
+  getContactUs(): Observable<ApiResponse<ContactUs>> {
+    return this.http.get<ApiResponse<ContactUs>>(`${this.baseUrl}/contact-us`);
+  }
+
+  getContactUsById(id: string): Observable<ApiResponse<ContactUs>> {
+    return this.http.get<ApiResponse<ContactUs>>(`${this.baseUrl}/contact-us/${id}`);
+  }
+
+  createContactUs(content: ContactUs): Observable<ApiResponse<ContactUs>> {
+    return this.http.post<ApiResponse<ContactUs>>(`${this.baseUrl}/contact-us`, content);
+  }
+
+  updateContactUs(id: string, content: Partial<ContactUs>): Observable<ApiResponse<ContactUs>> {
+    return this.http.put<ApiResponse<ContactUs>>(`${this.baseUrl}/contact-us/${id}`, content);
+  }
+
+  deleteContactUs(id: string): Observable<ApiResponse<ContactUs>> {
+    return this.http.delete<ApiResponse<ContactUs>>(`${this.baseUrl}/contact-us/${id}`);
   }
 }

@@ -15,7 +15,9 @@
           class="nav-item"
           [class.active]="(item.route && isActive(item.route)) || isParentActive(item)"
           [class.has-submenu]="item.submenu"
-          (click)="item.submenu ? toggleSubmenu(item) : (item.route && navigate(item.route))">
+          [class.has-children]="item.children"
+          [class.expanded]="item.children && isExpanded(item.title)"
+          (click)="item.submenu ? toggleSubmenu(item) : (item.children ? toggleMenu(item.title) : (item.route && navigate(item.route)))">
 
           <div class="nav-item-wrapper">
             <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
@@ -26,13 +28,35 @@
             <mat-icon class="nav-arrow" *ngIf="item.submenu">
               {{ item.expanded ? 'expand_more' : 'chevron_right' }}
             </mat-icon>
-            <mat-icon class="nav-arrow" *ngIf="!item.submenu && item.route && isActive(item.route)">
+            <mat-icon class="nav-arrow" *ngIf="item.children">
+              {{ isExpanded(item.title) ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+            <mat-icon class="nav-arrow" *ngIf="!item.submenu && !item.children && item.route && isActive(item.route)">
               chevron_right
             </mat-icon>
           </div>
         </div>
 
-        <!-- Submenu Items -->
+        <!-- Children Items (for Dynamic Pages) -->
+        <div class="sub-menu" *ngIf="item.children && isExpanded(item.title)">
+          <div
+            *ngFor="let child of item.children"
+            class="nav-item sub-item"
+            [class.active]="child.route ? isActive(child.route) : false"
+            (click)="navigateChild($event, child.route)">
+
+            <div class="nav-item-wrapper">
+              <mat-icon class="nav-icon">{{child.icon}}</mat-icon>
+              <div class="nav-content">
+                <span class="nav-title">{{child.title}}</span>
+                <span class="nav-description">{{child.description}}</span>
+              </div>
+              <mat-icon class="nav-arrow" *ngIf="child.route ? isActive(child.route) : false">chevron_right</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submenu Items (for Navbar Management) -->
         <div class="submenu" *ngIf="item.submenu && item.expanded">
           <div *ngFor="let subItem of item.submenu" class="submenu-item-container">
             <!-- If submenu item has nested submenu -->
@@ -61,9 +85,9 @@
               <div
                 *ngFor="let nestedItem of subItem.submenu"
                 class="nested-submenu-item"
-                [class.active]="nestedItem.route && isActive(nestedItem.route)"
-                (click)="nestedItem.route && navigate(nestedItem.route); $event.stopPropagation()">
-                <mat-icon class="nested-icon">{{ nestedItem.route && isActive(nestedItem.route) ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+                [class.active]="nestedItem.route ? isActive(nestedItem.route) : false"
+                (click)="navigateChild($event, nestedItem.route)">
+                <mat-icon class="nested-icon">{{ nestedItem.route ? (isActive(nestedItem.route) ? 'radio_button_checked' : 'radio_button_unchecked') : 'radio_button_unchecked' }}</mat-icon>
                 <span class="nested-title">{{nestedItem.title}}</span>
               </div>
             </div>

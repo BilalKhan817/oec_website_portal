@@ -1,0 +1,532 @@
+<div class="oec-at-glance-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">visibility</mat-icon>
+          OEC at Glance Content Management
+        </h1>
+        <p class="page-subtitle">Manage all content for the OEC at Glance page</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="saveContent()"
+          [disabled]="isSaving || contentForm.invalid"
+          class="save-button">
+          <mat-icon>save</mat-icon>
+          {{ isEditMode ? 'Update Content' : 'Create Content' }}
+        </button>
+
+        <button
+          mat-icon-button
+          (click)="refreshData()"
+          class="refresh-button"
+          [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading content...</p>
+  </div>
+
+  <!-- Content Form -->
+  <div class="content-form" *ngIf="!isLoading">
+    <form [formGroup]="contentForm">
+
+      <!-- Page Header Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Page Header</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Page Title</mat-label>
+              <input matInput formControlName="page_title">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Page Subtitle</mat-label>
+              <textarea matInput formControlName="page_subtitle" rows="2"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Establishment Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Year of Establishment</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="establishment_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="establishment_label">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Establishment Year</mat-label>
+              <input matInput formControlName="establishment_year">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Note</mat-label>
+              <input matInput formControlName="establishment_note">
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Legal Foundation Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Legal Foundation</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="legal_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="legal_label">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="legal_items">
+            <div *ngFor="let item of legal_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(legal_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addTextItem(legal_items)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Headquarters Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Headquarters</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="headquarters_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="headquarters_label">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="headquarters_items">
+            <div *ngFor="let item of headquarters_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(headquarters_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addTextItem(headquarters_items)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Workforce Deployed Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Workforce Deployed</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="workforce_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="workforce_label">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Value/Description</mat-label>
+              <input matInput formControlName="workforce_value">
+            </mat-form-field>
+          </div>
+
+          <h4>Countries</h4>
+          <div formArrayName="workforce_countries">
+            <div *ngFor="let item of workforce_countries.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="flag-field">
+                <mat-label>Flag {{ i + 1 }}</mat-label>
+                <mat-select formControlName="flag">
+                  <mat-option *ngFor="let flag of flagOptions" [value]="flag.value">
+                    {{ flag.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Country {{ i + 1 }}</mat-label>
+                <input matInput formControlName="country">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(workforce_countries, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addCountryItem(workforce_countries)" type="button">
+            <mat-icon>add</mat-icon> Add Country
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Job Seekers Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Registered Job Seekers</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="job_seekers_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="job_seekers_label">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Value</mat-label>
+              <input matInput formControlName="job_seekers_value">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Note</mat-label>
+              <input matInput formControlName="job_seekers_note">
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Employers Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>International Employers</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="employers_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="employers_label">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Value</mat-label>
+              <input matInput formControlName="employers_value">
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Programs Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Key Programs & Agreements</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="programs_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="programs_label">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="programs_items">
+            <div *ngFor="let item of programs_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Program {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(programs_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addTextItem(programs_items)" type="button">
+            <mat-icon>add</mat-icon> Add Program
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Training Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Language Training & Development</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="training_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="training_label">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="training_items">
+            <div *ngFor="let item of training_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(training_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addTextItem(training_items)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tech Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Technological Milestones</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="tech_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="tech_label">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="tech_items">
+            <div *ngFor="let item of tech_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(tech_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addTextItem(tech_items)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Core Functions Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Core Functions (Process Steps)</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="functions_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="functions_label">
+            </mat-form-field>
+          </div>
+
+          <h4>Process Steps</h4>
+          <div formArrayName="functions_steps">
+            <div *ngFor="let step of functions_steps.controls; let i = index" [formGroupName]="i" class="step-item">
+              <mat-form-field appearance="outline" class="step-icon-field">
+                <mat-label>Step Icon {{ i + 1 }}</mat-label>
+                <mat-select formControlName="icon">
+                  <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                    {{ icon.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="step-label-field">
+                <mat-label>Step Label {{ i + 1 }}</mat-label>
+                <input matInput formControlName="label">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="step-desc-field">
+                <mat-label>Description {{ i + 1 }}</mat-label>
+                <input matInput formControlName="description">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(functions_steps, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addFunctionStep(functions_steps)" type="button">
+            <mat-icon>add</mat-icon> Add Step
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Org Structure Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Organizational Structure</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <mat-select formControlName="org_structure_icon">
+                <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+                  {{ icon.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Label</mat-label>
+              <input matInput formControlName="org_structure_label">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="org_structure_items">
+            <div *ngFor="let item of org_structure_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(org_structure_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addTextItem(org_structure_items)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Status -->
+      <mat-card class="form-section">
+        <mat-card-content>
+          <mat-slide-toggle formControlName="is_active">
+            Active
+          </mat-slide-toggle>
+        </mat-card-content>
+      </mat-card>
+
+    </form>
+  </div>
+</div>

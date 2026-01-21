@@ -47,6 +47,11 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ApiComponent } from './components/services/api/api.component';
 import { MenuManagementComponent } from './components/menu-management/menu-management.component';
 import { MenuDialogComponent } from './components/menu-management/menu-dialog/menu-dialog.component';
+import { AboutUsContentComponent } from './components/about-us-content/about-us-content.component';
+import { OecAtGlanceComponent } from './components/oec-at-glance/oec-at-glance.component';
+import { GoverningLawComponent } from './components/governing-law/governing-law.component';
+import { OurFunctionsComponent } from './components/our-functions/our-functions.component';
+import { ContactUsComponent } from './components/contact-us/contact-us.component';
 
 // Dialogs
 import { AnnouncementDialogComponent } from './components/announcements/announcement-dialog/announcement-dialog.component';
@@ -92,6 +97,24 @@ import { ContactFormPageComponent } from './components/contact-us-management/con
 import { AppRoutingModule } from './app-routing.module';
 import { NavbarManagementComponent } from './components/navbar-management/navbar-management.component';
 
+const routes:any = [
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'announcements', component: AnnouncementsComponent },
+  { path: 'banners', component: BannersComponent },
+  { path: 'about-oec', component: AboutOecComponent },
+  { path: 'executives', component: ExecutivesComponent },
+  { path: 'board-directors', component: BoardDirectorsComponent },
+  { path: 'about-us-content', component: AboutUsContentComponent },
+  { path: 'oec-at-glance', component: OecAtGlanceComponent },
+  { path: 'governing-law', component: GoverningLawComponent },
+  { path: 'our-functions', component: OurFunctionsComponent },
+  { path: 'contact-us', component: ContactUsComponent },
+  { path: 'services', component: ServicesComponent },
+  { path: 'api', component: ApiComponent },
+  { path: '**', redirectTo: '/dashboard' }
+];
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -101,6 +124,11 @@ import { NavbarManagementComponent } from './components/navbar-management/navbar
     AboutOecComponent,
     ExecutivesComponent,
     BoardDirectorsComponent,
+    AboutUsContentComponent,
+    OecAtGlanceComponent,
+    GoverningLawComponent,
+    OurFunctionsComponent,
+    ContactUsComponent,
     ServicesComponent,
     SidebarComponent,
     ApiComponent,

@@ -9,6 +9,12 @@ import { AboutOecComponent } from './components/about-oec/about-oec.component';
 import { ExecutivesComponent } from './components/executives/executives.component';
 import { BoardDirectorsComponent } from './components/board-directors/board-directors.component';
 import { ServicesComponent } from './components/services/services.component';
+import { ApiComponent } from './components/services/api/api.component';
+import { AboutUsContentComponent } from './components/about-us-content/about-us-content.component';
+import { OecAtGlanceComponent } from './components/oec-at-glance/oec-at-glance.component';
+import { GoverningLawComponent } from './components/governing-law/governing-law.component';
+import { OurFunctionsComponent } from './components/our-functions/our-functions.component';
+import { ContactUsComponent } from './components/contact-us/contact-us.component';
 
 // About Us Management
 import { AboutOecPageComponent } from './components/about-us-management/about-oec-page/about-oec-page.component';
@@ -66,6 +72,12 @@ const routes: Routes = [
   { path: 'executives', component: ExecutivesComponent },
   { path: 'board-directors', component: BoardDirectorsComponent },
   { path: 'services', component: ServicesComponent },
+  { path: 'api', component: ApiComponent },
+  { path: 'about-us-content', component: AboutUsContentComponent },
+  { path: 'oec-at-glance', component: OecAtGlanceComponent },
+  { path: 'governing-law', component: GoverningLawComponent },
+  { path: 'our-functions', component: OurFunctionsComponent },
+  { path: 'contact-us', component: ContactUsComponent },
 
   // About Us Management Routes
   { path: 'about-us/about-oec', component: AboutOecPageComponent },
@@ -115,7 +127,8 @@ const routes: Routes = [
   { path: 'navbar-management', component: NavbarManagementComponent },
 
   // Default route
-  { path: '', redirectTo: '/about-us/about-oec', pathMatch: 'full' }
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/dashboard' }
 ];
 
 @NgModule({

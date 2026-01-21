@@ -482,3 +482,93 @@
   color: #059669;
   font-weight: 500;
 }
+
+/* Parent menu with children */
+.nav-item.has-children {
+  background-color: #f8fafc;
+}
+
+.nav-item.has-children:hover {
+  background-color: #f1f5f9;
+}
+
+.nav-item.has-children.active {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.nav-item.has-children.active .nav-icon {
+  color: #0369a1;
+}
+
+.nav-item.has-children.active .nav-title {
+  color: #0369a1;
+}
+
+.nav-item.has-children.active .nav-description {
+  color: #0369a1;
+}
+
+.nav-item.has-children.active .nav-arrow {
+  color: #0369a1;
+}
+
+/* Sub-menu container */
+.sub-menu {
+  margin-left: 24px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-left: 2px solid #e2e8f0;
+  padding-left: 8px;
+}
+
+/* Sub-menu items */
+.nav-item.sub-item {
+  margin: 2px 8px;
+  background-color: white;
+  border-left: 3px solid transparent;
+}
+
+.nav-item.sub-item:hover {
+  background-color: #f1f5f9;
+  border-left-color: #cbd5e1;
+}
+
+.nav-item.sub-item.active {
+  background-color: #059669;
+  border-left-color: #22c55e;
+}
+
+.nav-item.sub-item .nav-item-wrapper {
+  padding: 10px 12px;
+  min-height: 48px;
+}
+
+.nav-item.sub-item .nav-icon {
+  font-size: 18px;
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+
+.nav-item.sub-item .nav-title {
+  font-size: 0.85rem;
+}
+
+.nav-item.sub-item .nav-description {
+  font-size: 0.7rem;
+}
+
+/* Arrow animation for expandable menu */
+.nav-item.has-children .nav-arrow {
+  transition: transform 0.2s ease;
+  color: #64748b;
+}
+
+.nav-item.has-children.expanded .nav-arrow {
+  transform: rotate(0deg);
+}
+
+.nav-item.has-children.active .nav-arrow {
+  color: #0369a1;
+}

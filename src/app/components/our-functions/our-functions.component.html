@@ -1,0 +1,155 @@
+<div class="our-functions-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">work</mat-icon>
+          Our Functions Content Management
+        </h1>
+        <p class="page-subtitle">Manage all content for the Our Functions page</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="saveContent()"
+          [disabled]="isSaving || contentForm.invalid"
+          class="save-button">
+          <mat-icon>save</mat-icon>
+          {{ isEditMode ? 'Update Content' : 'Create Content' }}
+        </button>
+
+        <button
+          mat-icon-button
+          (click)="refreshData()"
+          class="refresh-button"
+          [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading content...</p>
+  </div>
+
+  <!-- Content Form -->
+  <div class="content-form" *ngIf="!isLoading">
+    <form [formGroup]="contentForm">
+
+    <!-- Page Title -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Page Header</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Page Title</mat-label>
+          <input matInput formControlName="page_title" placeholder="Core Roles & Responsibilities of the OEC">
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Strategic Role Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Strategic Role Section</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="strategic_role_title">
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Strategic Role Content</mat-label>
+          <textarea matInput formControlName="strategic_role_content" rows="3"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Key Functions Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Key Functions Section</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="key_functions_title">
+        </mat-form-field>
+
+        <h4>Key Functions</h4>
+        <div formArrayName="key_functions_items">
+          <div *ngFor="let function of keyFunctionsItems.controls; let i = index" [formGroupName]="i"
+               style="margin-bottom: 30px; padding: 20px; border: 2px solid #3f51b5; border-radius: 8px; background-color: #f5f7ff;">
+
+            <!-- Function Title -->
+            <div class="array-item">
+              <mat-form-field class="array-field">
+                <mat-label>Function {{ i + 1 }} Title</mat-label>
+                <input matInput formControlName="title" placeholder="e.g., Demand Management">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeKeyFunction(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            <!-- Function Items -->
+            <div formArrayName="items" style="margin-left: 30px; margin-top: 15px;">
+              <h5 style="color: #666; font-size: 14px;">Items for Function {{ i + 1 }}</h5>
+              <div *ngFor="let item of getFunctionItems(i).controls; let j = index" [formGroupName]="j"
+                   style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: white;">
+
+                <div class="array-item">
+                  <mat-form-field class="array-field">
+                    <mat-label>Item {{ j + 1 }}</mat-label>
+                    <textarea matInput formControlName="text" rows="2"></textarea>
+                  </mat-form-field>
+                  <button mat-icon-button color="warn" type="button" (click)="removeFunctionItem(i, j)">
+                    <mat-icon>remove_circle</mat-icon>
+                  </button>
+                </div>
+
+                <!-- Nested Items -->
+                <div formArrayName="nested_items" style="margin-left: 30px; margin-top: 10px;">
+                  <h6 style="color: #999; font-size: 12px;">Sub-items (optional)</h6>
+                  <div *ngFor="let nestedItem of getNestedItems(i, j).controls; let k = index" [formGroupName]="k" class="array-item">
+                    <mat-form-field class="array-field" style="width: calc(100% - 60px);">
+                      <mat-label>Sub-item {{ k + 1 }}</mat-label>
+                      <input matInput formControlName="text">
+                    </mat-form-field>
+                    <button mat-icon-button color="warn" type="button" (click)="removeNestedItem(i, j, k)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                  <button mat-stroked-button color="accent" type="button" (click)="addNestedItem(i, j)" style="font-size: 12px;">
+                    <mat-icon style="font-size: 16px;">add</mat-icon>
+                    Add Sub-item
+                  </button>
+                </div>
+              </div>
+
+              <button mat-stroked-button color="primary" type="button" (click)="addFunctionItem(i)">
+                <mat-icon>add</mat-icon>
+                Add Item
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button mat-raised-button color="primary" type="button" (click)="addKeyFunction()">
+          <mat-icon>add</mat-icon>
+          Add Key Function
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    </form>
+  </div>
+</div>

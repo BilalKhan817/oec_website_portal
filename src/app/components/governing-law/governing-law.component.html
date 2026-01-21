@@ -1,0 +1,247 @@
+<div class="governing-law-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">gavel</mat-icon>
+          Governing Law Content Management
+        </h1>
+        <p class="page-subtitle">Manage all content for the Governing Law page</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="saveContent()"
+          [disabled]="isSaving || contentForm.invalid"
+          class="save-button">
+          <mat-icon>save</mat-icon>
+          {{ isEditMode ? 'Update Content' : 'Create Content' }}
+        </button>
+
+        <button
+          mat-icon-button
+          (click)="refreshData()"
+          class="refresh-button"
+          [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading content...</p>
+  </div>
+
+  <!-- Content Form -->
+  <div class="content-form" *ngIf="!isLoading">
+    <form [formGroup]="contentForm">
+
+    <!-- Page Title -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Page Header</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Page Title</mat-label>
+          <input matInput formControlName="page_title" placeholder="Legal Framework of the OEC">
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Statutory Status Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Statutory Status Section</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="statutory_status_title">
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Introduction Text</mat-label>
+          <textarea matInput formControlName="statutory_status_intro" rows="2"></textarea>
+        </mat-form-field>
+
+        <h4>Statutory Status Items</h4>
+        <div formArrayName="statutory_status_items">
+          <div *ngFor="let item of statutoryStatusItems.controls; let i = index" [formGroupName]="i" class="array-item">
+            <mat-form-field class="array-field">
+              <mat-label>Item {{ i + 1 }}</mat-label>
+              <textarea matInput formControlName="text" rows="2"></textarea>
+            </mat-form-field>
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(statutoryStatusItems, i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" type="button" (click)="addTextItem(statutoryStatusItems)">
+          <mat-icon>add</mat-icon>
+          Add Item
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Regulatory Oversight Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Regulatory Oversight Section</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="regulatory_oversight_title">
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Introduction Text</mat-label>
+          <textarea matInput formControlName="regulatory_oversight_intro" rows="2"></textarea>
+        </mat-form-field>
+
+        <h4>Regulatory Oversight Items</h4>
+        <div formArrayName="regulatory_oversight_items">
+          <div *ngFor="let item of regulatoryOversightItems.controls; let i = index" [formGroupName]="i" style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px;">
+            <div class="array-item">
+              <mat-form-field class="array-field">
+                <mat-label>Main Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeItem(regulatoryOversightItems, i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            <!-- Nested Items -->
+            <div formArrayName="nested_items" style="margin-left: 30px; margin-top: 10px;">
+              <h5 style="color: #666; font-size: 14px;">Sub-items for Item {{ i + 1 }}</h5>
+              <div *ngFor="let nestedItem of getNestedItems(i).controls; let j = index" [formGroupName]="j" class="array-item">
+                <mat-form-field class="array-field">
+                  <mat-label>Sub-item {{ j + 1 }}</mat-label>
+                  <input matInput formControlName="text">
+                </mat-form-field>
+                <button mat-icon-button color="warn" type="button" (click)="removeNestedItem(i, j)">
+                  <mat-icon>remove_circle</mat-icon>
+                </button>
+              </div>
+              <button mat-stroked-button color="primary" type="button" (click)="addNestedItem(i)">
+                <mat-icon>add</mat-icon>
+                Add Sub-item
+              </button>
+            </div>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" type="button" (click)="addRegulatoryOversightItem()">
+          <mat-icon>add</mat-icon>
+          Add Main Item
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Licensing Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Licensing & Exclusivity Section</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="licensing_title">
+        </mat-form-field>
+
+        <h4>Licensing Items</h4>
+        <div formArrayName="licensing_items">
+          <div *ngFor="let item of licensingItems.controls; let i = index" [formGroupName]="i" class="array-item">
+            <mat-form-field class="array-field">
+              <mat-label>Item {{ i + 1 }}</mat-label>
+              <textarea matInput formControlName="text" rows="2"></textarea>
+            </mat-form-field>
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(licensingItems, i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" type="button" (click)="addTextItem(licensingItems)">
+          <mat-icon>add</mat-icon>
+          Add Item
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Legal Obligations Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Key Legal Obligations Table</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="legal_obligations_title">
+        </mat-form-field>
+
+        <h4>Legal Obligations Table Rows</h4>
+        <div formArrayName="legal_obligations_table">
+          <div *ngFor="let row of legalObligationsTable.controls; let i = index" [formGroupName]="i" style="margin-bottom: 15px;">
+            <div class="form-row two-columns">
+              <mat-form-field>
+                <mat-label>Regulation</mat-label>
+                <input matInput formControlName="regulation" placeholder="e.g., Emigration Ordinance, 1979">
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Purpose</mat-label>
+                <input matInput formControlName="purpose" placeholder="e.g., Legal export of manpower">
+              </mat-form-field>
+            </div>
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(legalObligationsTable, i)">
+              <mat-icon>delete</mat-icon>
+              Remove Row
+            </button>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" type="button" (click)="addLegalObligationRow()">
+          <mat-icon>add</mat-icon>
+          Add Table Row
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Protection Measures Section -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Public Protection Measures Section</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="full-width">
+          <mat-label>Section Title</mat-label>
+          <input matInput formControlName="protection_measures_title">
+        </mat-form-field>
+
+        <h4>Protection Measures Items</h4>
+        <div formArrayName="protection_measures_items">
+          <div *ngFor="let item of protectionMeasuresItems.controls; let i = index" [formGroupName]="i" class="array-item">
+            <mat-form-field class="array-field">
+              <mat-label>Item {{ i + 1 }}</mat-label>
+              <textarea matInput formControlName="text" rows="2"></textarea>
+            </mat-form-field>
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(protectionMeasuresItems, i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" type="button" (click)="addTextItem(protectionMeasuresItems)">
+          <mat-icon>add</mat-icon>
+          Add Item
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    </form>
+  </div>
+</div>

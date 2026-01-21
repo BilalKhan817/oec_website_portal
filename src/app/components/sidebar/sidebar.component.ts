@@ -16,6 +16,7 @@ interface MenuItem {
   description: string;
   expanded?: boolean;
   submenu?: SubMenuItem[];
+  children?: MenuItem[];
 }
 
 @Component({
@@ -24,6 +25,8 @@ interface MenuItem {
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
+  expandedMenus: { [key: string]: boolean } = {};
+
   menuItems: MenuItem[] = [
     {
       title: 'Dashboard',
@@ -50,16 +53,53 @@ export class SidebarComponent {
       description: 'Company information'
     },
     {
-      title: 'Leadership',
-      icon: 'people',
-      route: '/executives',
-      description: 'Executive team'
-    },
-    {
-      title: 'Board of Directors',
-      icon: 'groups',
-      route: '/board-directors',
-      description: 'Board members'
+      title: 'Dynamic Pages',
+      icon: 'dynamic_feed',
+      description: 'Manage dynamic content pages',
+      children: [
+        {
+          title: 'About Us Content',
+          icon: 'info',
+          route: '/about-us-content',
+          description: 'About Us page content'
+        },
+        {
+          title: 'Board of Directors',
+          icon: 'groups',
+          route: '/board-directors',
+          description: 'Board members'
+        },
+        {
+          title: 'Contact Us',
+          icon: 'contact_mail',
+          route: '/contact-us',
+          description: 'Contact page content'
+        },
+        {
+          title: 'Leadership',
+          icon: 'people',
+          route: '/executives',
+          description: 'Executive team'
+        },
+        {
+          title: 'Governing Law',
+          icon: 'gavel',
+          route: '/governing-law',
+          description: 'Legal framework content'
+        },
+        {
+          title: 'OEC at Glance',
+          icon: 'visibility',
+          route: '/oec-at-glance',
+          description: 'OEC at Glance content'
+        },
+        {
+          title: 'Our Functions',
+          icon: 'work',
+          route: '/our-functions',
+          description: 'Functions & roles content'
+        }
+      ]
     },
     {
       title: 'Services',
@@ -152,6 +192,24 @@ export class SidebarComponent {
     if (item.submenu) {
       return item.submenu.some(subItem => this.router.url === subItem.route);
     }
+    if (item.children) {
+      return item.children.some(child => this.router.url === child.route);
+    }
     return false;
+  }
+
+  toggleMenu(title: string): void {
+    this.expandedMenus[title] = !this.expandedMenus[title];
+  }
+
+  isExpanded(title: string): boolean {
+    return this.expandedMenus[title] || false;
+  }
+
+  navigateChild(event: Event, route: string | undefined): void {
+    event.stopPropagation();
+    if (route) {
+      this.router.navigate([route]);
+    }
   }
 }

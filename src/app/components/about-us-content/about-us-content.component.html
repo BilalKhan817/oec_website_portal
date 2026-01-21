@@ -1,0 +1,381 @@
+<div class="about-us-content-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">info</mat-icon>
+          About Us Content Management
+        </h1>
+        <p class="page-subtitle">Manage all content for the About Us page</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="saveContent()"
+          [disabled]="isSaving || contentForm.invalid"
+          class="save-button">
+          <mat-icon>save</mat-icon>
+          {{ isEditMode ? 'Update Content' : 'Create Content' }}
+        </button>
+
+        <button
+          mat-icon-button
+          (click)="refreshData()"
+          class="refresh-button"
+          [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading content...</p>
+  </div>
+
+  <!-- Content Form -->
+  <div class="content-form" *ngIf="!isLoading">
+    <form [formGroup]="contentForm">
+
+      <!-- Page Header Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Page Header</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Page Title</mat-label>
+              <input matInput formControlName="page_title">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Organization Name</mat-label>
+              <input matInput formControlName="organization_name">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Established Year</mat-label>
+              <input matInput formControlName="established_year">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Ministry Name</mat-label>
+              <input matInput formControlName="ministry_name">
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Introduction Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Introduction Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="introduction_title">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Introduction Content</mat-label>
+              <textarea matInput formControlName="introduction_content" rows="6"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Legal Mandate Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Legal Mandate Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="legal_mandate_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="legal_mandate_items">
+            <div *ngFor="let item of legal_mandate_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(legal_mandate_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(legal_mandate_items, false)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Our Role Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Our Role Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="our_role_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="our_role_items">
+            <div *ngFor="let item of our_role_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(our_role_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(our_role_items, false)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Target Sectors Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Target Sectors Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="target_sectors_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="target_sectors_items">
+            <div *ngFor="let item of target_sectors_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="icon-field">
+                <mat-label>Icon {{ i + 1 }}</mat-label>
+                <mat-select formControlName="icon">
+                  <mat-option *ngFor="let iconOption of iconOptions" [value]="iconOption.value">
+                    {{ iconOption.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Text {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(target_sectors_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(target_sectors_items, true)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Unique Strength Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Unique Strength Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="unique_strength_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="unique_strength_items">
+            <div *ngFor="let item of unique_strength_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(unique_strength_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(unique_strength_items, false)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Vision Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Vision Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="vision_title">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Vision Content</mat-label>
+              <textarea matInput formControlName="vision_content" rows="3"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Mission Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Mission Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="mission_title">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mission Content</mat-label>
+              <textarea matInput formControlName="mission_content" rows="3"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Core Values Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Core Values Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="core_values_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="core_values_items">
+            <div *ngFor="let item of core_values_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Value {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(core_values_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(core_values_items, false)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Impact Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Impact Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="impact_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="impact_items">
+            <div *ngFor="let item of impact_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Item {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(impact_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(impact_items, false)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Future Goals Section -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Future Goals Section</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="future_goals_title">
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="future_goals_items">
+            <div *ngFor="let item of future_goals_items.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="array-field">
+                <mat-label>Goal {{ i + 1 }}</mat-label>
+                <input matInput formControlName="text">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeItem(future_goals_items, i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <button mat-raised-button color="accent" (click)="addItem(future_goals_items, false)" type="button">
+            <mat-icon>add</mat-icon> Add Item
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Status -->
+      <mat-card class="form-section">
+        <mat-card-content>
+          <mat-slide-toggle formControlName="is_active">
+            Active
+          </mat-slide-toggle>
+        </mat-card-content>
+      </mat-card>
+
+    </form>
+  </div>
+</div>
