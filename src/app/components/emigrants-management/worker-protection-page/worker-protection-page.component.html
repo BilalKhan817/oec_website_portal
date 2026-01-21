@@ -1,0 +1,170 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>Worker Protection Page Management</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" *ngIf="!isEditing && pageData" (click)="toggleEdit()">
+        <mat-icon>edit</mat-icon> Edit Page
+      </button>
+      <button mat-raised-button color="primary" *ngIf="!pageData && !isEditing" (click)="isEditing = true">
+        <mat-icon>add</mat-icon> Create Page
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+
+  <!-- View Mode -->
+  <mat-card *ngIf="!isEditing && pageData" class="view-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageData.page_title }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="info-section">
+        <h3>Introduction</h3>
+        <p>{{ pageData.introduction }}</p>
+      </div>
+
+      <div class="info-section" *ngIf="pageData.legal_framework">
+        <h3>Legal Framework</h3>
+        <p>{{ pageData.legal_framework }}</p>
+      </div>
+
+      <div class="info-section" *ngIf="pageData.protection_measures && pageData.protection_measures.length > 0">
+        <h3>Protection Measures</h3>
+        <ul>
+          <li *ngFor="let measure of pageData.protection_measures">
+            <strong>{{ measure.title }}</strong> <span *ngIf="measure.icon">({{ measure.icon }})</span>: {{ measure.description }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-section" *ngIf="pageData.resources && pageData.resources.length > 0">
+        <h3>Resources</h3>
+        <ul>
+          <li *ngFor="let resource of pageData.resources">
+            <strong>{{ resource.title }}</strong>: {{ resource.description }}
+            <a *ngIf="resource.link_url" [href]="resource.link_url" target="_blank"> (View Resource)</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <p><strong>Status:</strong>
+          <mat-chip [color]="pageData.is_active ? 'primary' : 'warn'" selected>
+            {{ pageData.is_active ? 'Active' : 'Inactive' }}
+          </mat-chip>
+        </p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Edit/Create Mode -->
+  <mat-card *ngIf="isEditing" class="edit-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageData ? 'Edit' : 'Create' }} Worker Protection Page</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="pageForm" (ngSubmit)="onSubmit()">
+        <div class="form-section">
+          <h3>Basic Information</h3>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Page Title</mat-label>
+            <input matInput formControlName="page_title" required>
+            <mat-error>Page title is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Introduction</mat-label>
+            <textarea matInput formControlName="introduction" rows="4" required></textarea>
+            <mat-error>Introduction is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Legal Framework</mat-label>
+            <textarea matInput formControlName="legal_framework" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Protection Measures</h3>
+            <button mat-mini-fab color="primary" type="button" (click)="addProtectionMeasure()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <div formArrayName="protection_measures">
+            <div *ngFor="let measure of protection_measures.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="title" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Icon</mat-label>
+                <input matInput formControlName="icon">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Description</mat-label>
+                <input matInput formControlName="description">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeProtectionMeasure(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Resources</h3>
+            <button mat-mini-fab color="primary" type="button" (click)="addResource()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <div formArrayName="resources">
+            <div *ngFor="let resource of resources.controls; let i = index" [formGroupName]="i" class="array-item">
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="title" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Description</mat-label>
+                <input matInput formControlName="description">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Link URL</mat-label>
+                <input matInput formControlName="link_url">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeResource(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <mat-slide-toggle formControlName="is_active">
+            Page Active
+          </mat-slide-toggle>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button type="button" (click)="toggleEdit()" [disabled]="isLoading">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || pageForm.invalid">
+            <mat-icon>save</mat-icon> Save Page
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!pageData && !isEditing && !isLoading" class="empty-state">
+    <mat-card-content>
+      <mat-icon>description</mat-icon>
+      <h3>No Page Data Found</h3>
+      <p>Create a new Worker Protection page to get started.</p>
+      <button mat-raised-button color="primary" (click)="isEditing = true">
+        <mat-icon>add</mat-icon> Create Page
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

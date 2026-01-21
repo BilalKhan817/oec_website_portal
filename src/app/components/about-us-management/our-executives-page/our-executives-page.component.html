@@ -1,0 +1,121 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>Leadership Page Management</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" *ngIf="!isEditing && pageData" (click)="toggleEdit()">
+        <mat-icon>edit</mat-icon> Edit Page
+      </button>
+      <button mat-raised-button color="primary" *ngIf="!pageData && !isEditing" (click)="isEditing = true">
+        <mat-icon>add</mat-icon> Create Page
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+
+  <!-- View Mode -->
+  <mat-card *ngIf="!isEditing && pageData" class="view-card">
+    <mat-card-header>
+      <mat-card-title>Leadership Information</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="info-section">
+        <h3>Navbar Description:</h3>
+        <p class="description-text">{{ pageData.navbar_description || 'No description set' }}</p>
+      </div>
+
+      <div class="info-section" *ngIf="pageData.leadership_items && pageData.leadership_items.length > 0">
+        <h3>Leadership Items:</h3>
+        <div class="leadership-grid">
+          <div *ngFor="let item of pageData.leadership_items" class="leadership-item">
+            <img *ngIf="item.image" [src]="item.image" [alt]="item.title" class="leadership-image">
+            <h4>{{ item.title }}</h4>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Edit/Create Mode -->
+  <mat-card *ngIf="isEditing" class="edit-card">
+    <mat-card-header>
+      <mat-card-title>Edit Leadership Information</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="pageForm" (ngSubmit)="onSubmit()">
+        <div class="form-section">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Navbar Description</mat-label>
+            <input matInput formControlName="navbar_description" placeholder="e.g., Senior management and leadership team">
+            <mat-hint>This description appears in the About Us navbar menu</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Leadership Items Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Leadership Items</h3>
+            <button mat-raised-button color="accent" type="button" (click)="addLeadershipItem()">
+              <mat-icon>add</mat-icon> Add Leadership Item
+            </button>
+          </div>
+
+          <div formArrayName="leadership_items">
+            <div *ngFor="let item of leadershipItems.controls; let i = index" [formGroupName]="i" class="array-item">
+              <div class="leadership-form-group">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName="title" placeholder="e.g., Our Executives">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Order</mat-label>
+                    <input matInput type="number" formControlName="order" placeholder="0">
+                  </mat-form-field>
+
+                  <button mat-icon-button color="warn" type="button" (click)="removeLeadershipItem(i)" class="remove-button-inline">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+
+                <div class="image-upload-section">
+                  <div class="upload-area">
+                    <label>Leadership Image</label>
+                    <input type="file" (change)="onLeadershipImageSelected($event, i)" accept="image/*">
+                    <mat-hint>Click to upload or change image</mat-hint>
+                  </div>
+
+                  <div *ngIf="item.get('image')?.value" class="image-preview">
+                    <h4>Current Image:</h4>
+                    <img [src]="item.get('image')?.value" alt="{{ item.get('title')?.value }}" class="preview-img">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p *ngIf="leadershipItems.length === 0" class="no-items">No leadership items added yet. Click "Add Leadership Item" to create one.</p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button type="button" (click)="toggleEdit()" [disabled]="isLoading">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
+            <mat-icon>save</mat-icon> Save
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!pageData && !isEditing && !isLoading" class="empty-state">
+    <mat-card-content>
+      <mat-icon>description</mat-icon>
+      <h3>No Leadership Data Found</h3>
+      <p>Create leadership page content to get started.</p>
+      <button mat-raised-button color="primary" (click)="isEditing = true">
+        <mat-icon>add</mat-icon> Create Page
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

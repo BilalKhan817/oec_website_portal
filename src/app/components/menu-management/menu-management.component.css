@@ -1,0 +1,78 @@
+.menu-management-container {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 48px;
+  color: #999;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+.menu-table {
+  width: 100%;
+}
+
+.menu-row {
+  cursor: move;
+}
+
+.menu-row:hover {
+  background-color: #f5f5f5;
+}
+
+.drag-handle {
+  cursor: move;
+  color: #999;
+}
+
+.icon-class {
+  font-size: 11px;
+  color: #999;
+  margin-left: 8px;
+  font-family: monospace;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  background: white;
+  opacity: 0.9;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+mat-card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

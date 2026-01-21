@@ -1,0 +1,244 @@
+<h2 mat-dialog-title>Edit Menu Content: {{ menuItem.title }}</h2>
+
+<mat-dialog-content class="content-editor-dialog">
+  <form [formGroup]="contentForm">
+
+    <!-- Tabs Section (for dropdown_type: 'tabs') -->
+    <div *ngIf="menuItem.dropdown_type === 'tabs'" class="tabs-section">
+      <div class="section-header">
+        <h3>Tabs</h3>
+        <button mat-raised-button color="primary" type="button" (click)="addTab()">
+          <mat-icon>add</mat-icon> Add Tab
+        </button>
+      </div>
+
+      <mat-accordion formArrayName="tabs">
+        <mat-expansion-panel *ngFor="let tab of tabs.controls; let tabIndex = index" [formGroupName]="tabIndex">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>{{ tab.get('tab_icon')?.value }}</mat-icon>
+              <span class="panel-title-text">{{ tab.get('tab_title')?.value || 'New Tab' }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ getTabItems(tabIndex).length }} items
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Tab Details -->
+          <div class="tab-content">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Tab Title</mat-label>
+                <input matInput formControlName="tab_title" required>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Tab Icon</mat-label>
+                <input matInput formControlName="tab_icon" placeholder="fas fa-building">
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Tab ID</mat-label>
+                <input matInput formControlName="tab_id" placeholder="about-overview">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Order</mat-label>
+                <input matInput type="number" formControlName="order">
+              </mat-form-field>
+            </div>
+
+            <!-- Tab Items -->
+            <div class="tab-items-section">
+              <div class="subsection-header">
+                <h4>Tab Items</h4>
+                <button mat-button color="accent" type="button" (click)="addTabItem(tabIndex)">
+                  <mat-icon>add_circle</mat-icon> Add Item
+                </button>
+              </div>
+
+              <div [formArrayName]="'items'">
+                <mat-card *ngFor="let item of getTabItems(tabIndex).controls; let itemIndex = index"
+                          [formGroupName]="itemIndex" class="item-card">
+                  <mat-card-header>
+                    <mat-card-title>
+                      <i [class]="item.get('icon')?.value"></i>
+                      {{ item.get('title')?.value || 'New Item' }}
+                    </mat-card-title>
+                    <button mat-icon-button color="warn" type="button" (click)="removeTabItem(tabIndex, itemIndex)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </mat-card-header>
+
+                  <mat-card-content>
+                    <div class="form-row">
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Item Title</mat-label>
+                        <input matInput formControlName="title" required>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Icon</mat-label>
+                        <input matInput formControlName="icon" placeholder="fas fa-circle">
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Link</mat-label>
+                        <input matInput formControlName="link" placeholder="/about-us">
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput formControlName="description" rows="2"></textarea>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Link Type</mat-label>
+                        <mat-select formControlName="link_type">
+                          <mat-option value="internal">Internal</mat-option>
+                          <mat-option value="external">External</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Image URL</mat-label>
+                        <input matInput formControlName="image_url" placeholder="../../../assets/images/...">
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-checkbox formControlName="expandable">Expandable Card</mat-checkbox>
+                    </div>
+
+                    <div class="form-row" *ngIf="item.get('expandable')?.value">
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Expand Content</mat-label>
+                        <textarea matInput formControlName="expand_content" rows="3"></textarea>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Badge Text</mat-label>
+                        <input matInput formControlName="badge_text" placeholder="New">
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Badge Color</mat-label>
+                        <input matInput formControlName="badge_color" placeholder="green">
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <mat-form-field appearance="outline" class="quarter-width">
+                        <mat-label>Order</mat-label>
+                        <input matInput type="number" formControlName="order">
+                      </mat-form-field>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+
+            <div class="panel-actions">
+              <button mat-button color="warn" type="button" (click)="removeTab(tabIndex)">
+                <mat-icon>delete</mat-icon> Remove Tab
+              </button>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+
+    <!-- Simple Items Section (for dropdown_type: 'simple' or 'mega') -->
+    <div *ngIf="menuItem.dropdown_type === 'simple' || menuItem.dropdown_type === 'mega'" class="items-section">
+      <div class="section-header">
+        <h3>Dropdown Items</h3>
+        <button mat-raised-button color="primary" type="button" (click)="addItem()">
+          <mat-icon>add</mat-icon> Add Item
+        </button>
+      </div>
+
+      <div formArrayName="items">
+        <mat-card *ngFor="let item of items.controls; let itemIndex = index"
+                  [formGroupName]="itemIndex" class="item-card">
+          <mat-card-header>
+            <mat-card-title>
+              <i [class]="item.get('icon')?.value"></i>
+              {{ item.get('title')?.value || 'New Item' }}
+            </mat-card-title>
+            <button mat-icon-button color="warn" type="button" (click)="removeItem(itemIndex)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Item Title</mat-label>
+                <input matInput formControlName="title" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Icon</mat-label>
+                <input matInput formControlName="icon" placeholder="fas fa-circle">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Link</mat-label>
+                <input matInput formControlName="link" placeholder="/page">
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput formControlName="description" rows="2"></textarea>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Link Type</mat-label>
+                <mat-select formControlName="link_type">
+                  <mat-option value="internal">Internal</mat-option>
+                  <mat-option value="external">External</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Image URL</mat-label>
+                <input matInput formControlName="image_url">
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="quarter-width">
+                <mat-label>Order</mat-label>
+                <input matInput type="number" formControlName="order">
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">
+    <mat-icon>save</mat-icon> Save Content
+  </button>
+</mat-dialog-actions>

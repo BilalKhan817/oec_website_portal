@@ -324,30 +324,30 @@ import { ApiService, Announcement } from '../../../services/api.service';
             </mat-form-field>
           </div>
 
-          <!-- Button Title (Orange Button) -->
+          <!-- Button 1 Title (Orange Button) -->
           <div class="form-field">
             <label class="field-label">
-              Button Title
+              Button 1 Title <span class="optional">(Optional)</span>
             </label>
             <mat-form-field appearance="outline" class="full-width">
-              <input matInput formControlName="orange_button_title" placeholder="Advertise Attachment">
+              <input matInput formControlName="orange_button_title" placeholder="Enter button text">
             </mat-form-field>
           </div>
 
-          <!-- Button Url (Orange Button) -->
+          <!-- Button 1 Url (Orange Button) -->
           <div class="form-field">
             <label class="field-label">
-              Button Url
+              Button 1 Url <span class="optional">(Optional)</span>
             </label>
             <mat-form-field appearance="outline" class="full-width">
-              <input matInput formControlName="orange_button_link" placeholder="Advertise Attachment">
+              <input matInput formControlName="orange_button_link" placeholder="Enter button URL">
             </mat-form-field>
           </div>
 
-          <!-- Blue Button Title (Optional) -->
+          <!-- Button 2 Title (Optional) -->
           <div class="form-field">
             <label class="field-label">
-              Blue Button Title <span class="optional">(Optional)</span>
+              Button 2 Title <span class="optional">(Optional)</span>
             </label>
             <mat-form-field appearance="outline" class="full-width">
               <input matInput formControlName="blue_button_title" placeholder="Advertise Attachment">
@@ -357,7 +357,7 @@ import { ApiService, Announcement } from '../../../services/api.service';
           <!-- Blue Button Url (Optional) -->
           <div class="form-field">
             <label class="field-label">
-              Blue Button Url <span class="optional">(Optional)</span>
+              Button 2 Url <span class="optional">(Optional)</span>
             </label>
             <mat-form-field appearance="outline" class="full-width">
               <input matInput formControlName="blue_button_link" placeholder="Advertise Attachment">
@@ -669,8 +669,8 @@ export class AnnouncementDialogComponent implements OnInit {
       title: [data?.title || '', [Validators.required]],
       deadline: [data?.deadline ? new Date(data.deadline) : ''],
       announcement_category: [data?.announcement_category || '', [Validators.required]],
-      orange_button_title: [data?.orange_button_title || '',],
-      orange_button_link: [data?.orange_button_link || '', ],
+      orange_button_title: [data?.orange_button_title || ''],
+      orange_button_link: [data?.orange_button_link || ''],
       blue_button_title: [data?.blue_button_title || ''],
       blue_button_link: [data?.blue_button_link || ''],
       attachments: this.fb.array([])

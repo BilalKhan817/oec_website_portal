@@ -3,25 +3,71 @@
   <div class="sidebar-header">
     <div class="header-info">
       <h3 class="sidebar-title">Content Management</h3>
-      <p class="sidebar-subtitle">Manage your home page content</p>
+      <p class="sidebar-subtitle">Manage your website content</p>
     </div>
   </div>
 
   <nav class="nav-section">
     <div class="nav-list">
-      <div 
-        *ngFor="let item of menuItems" 
-        class="nav-item"
-        [class.active]="isActive(item.route)"
-        (click)="navigate(item.route)">
-        
-        <div class="nav-item-wrapper">
-          <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
-          <div class="nav-content">
-            <span class="nav-title">{{item.title}}</span>
-            <span class="nav-description">{{item.description}}</span>
+      <div *ngFor="let item of menuItems" class="nav-item-container">
+        <!-- Main Menu Item -->
+        <div
+          class="nav-item"
+          [class.active]="(item.route && isActive(item.route)) || isParentActive(item)"
+          [class.has-submenu]="item.submenu"
+          (click)="item.submenu ? toggleSubmenu(item) : (item.route && navigate(item.route))">
+
+          <div class="nav-item-wrapper">
+            <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
+            <div class="nav-content">
+              <span class="nav-title">{{item.title}}</span>
+              <span class="nav-description">{{item.description}}</span>
+            </div>
+            <mat-icon class="nav-arrow" *ngIf="item.submenu">
+              {{ item.expanded ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+            <mat-icon class="nav-arrow" *ngIf="!item.submenu && item.route && isActive(item.route)">
+              chevron_right
+            </mat-icon>
           </div>
-          <mat-icon class="nav-arrow" *ngIf="isActive(item.route)">chevron_right</mat-icon>
+        </div>
+
+        <!-- Submenu Items -->
+        <div class="submenu" *ngIf="item.submenu && item.expanded">
+          <div *ngFor="let subItem of item.submenu" class="submenu-item-container">
+            <!-- If submenu item has nested submenu -->
+            <div
+              *ngIf="subItem.submenu"
+              class="submenu-item has-nested"
+              [class.expanded]="subItem.expanded"
+              (click)="toggleSubmenu(subItem); $event.stopPropagation()">
+              <mat-icon class="submenu-icon">folder</mat-icon>
+              <span class="submenu-title">{{subItem.title}}</span>
+              <mat-icon class="submenu-arrow">{{ subItem.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+            </div>
+
+            <!-- If submenu item is a simple route -->
+            <div
+              *ngIf="!subItem.submenu && subItem.route"
+              class="submenu-item"
+              [class.active]="isActive(subItem.route)"
+              (click)="navigate(subItem.route); $event.stopPropagation()">
+              <mat-icon class="submenu-icon">business_center</mat-icon>
+              <span class="submenu-title">{{subItem.title}}</span>
+            </div>
+
+            <!-- Nested submenu (third level) -->
+            <div class="nested-submenu" *ngIf="subItem.submenu && subItem.expanded">
+              <div
+                *ngFor="let nestedItem of subItem.submenu"
+                class="nested-submenu-item"
+                [class.active]="nestedItem.route && isActive(nestedItem.route)"
+                (click)="nestedItem.route && navigate(nestedItem.route); $event.stopPropagation()">
+                <mat-icon class="nested-icon">{{ nestedItem.route && isActive(nestedItem.route) ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+                <span class="nested-title">{{nestedItem.title}}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -32,8 +78,8 @@
       <h4 class="stats-title">Quick Stats</h4>
       <div class="stats-row">
         <div class="stat-box">
-          <span class="stat-number">5</span>
-          <span class="stat-label">Modules</span>
+          <span class="stat-number">32</span>
+          <span class="stat-label">Pages</span>
         </div>
         <div class="stat-box">
           <span class="stat-status">API</span>

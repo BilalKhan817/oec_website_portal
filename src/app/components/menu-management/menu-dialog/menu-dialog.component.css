@@ -1,0 +1,64 @@
+.menu-form {
+  padding: 16px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.dropdown-config {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.dropdown-config h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.json-editor-section {
+  margin-top: 16px;
+}
+
+.json-editor {
+  margin-top: 16px;
+}
+
+.json-textarea {
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.hint {
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+mat-dialog-actions button {
+  min-width: 80px;
+}
+
+mat-dialog-actions mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
