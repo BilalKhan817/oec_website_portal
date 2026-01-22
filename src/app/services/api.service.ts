@@ -286,7 +286,8 @@ export interface ContactUs {
     address: string;
     phone: string;
     email: string;
-    map_embed_url?: string;
+    latitude?: number;
+    longitude?: number;
   };
   regional_offices_section: {
     title: string;
@@ -296,7 +297,8 @@ export interface ContactUs {
       address: string;
       phone: string;
       email: string;
-      map_embed_url?: string;
+      latitude?: number;
+      longitude?: number;
     }[];
   };
   travel_office_section: {
@@ -304,7 +306,8 @@ export interface ContactUs {
     icon: string;
     address: string;
     phone: string;
-    map_embed_url?: string;
+    latitude?: number;
+    longitude?: number;
   };
   feedback_section: {
     title: string;

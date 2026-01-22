@@ -94,11 +94,24 @@
             </mat-form-field>
           </div>
 
-          <mat-form-field class="full-width">
-            <mat-label>Google Maps Embed URL</mat-label>
-            <input matInput formControlName="map_embed_url" placeholder="https://www.google.com/maps/embed?pb=...">
-            <mat-hint>Go to Google Maps → Share → Embed a map → Copy the src URL</mat-hint>
-          </mat-form-field>
+          <div class="form-row two-columns">
+            <mat-form-field>
+              <mat-label>Latitude</mat-label>
+              <input matInput formControlName="latitude" type="number" step="0.0001" placeholder="33.6844">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Longitude</mat-label>
+              <input matInput formControlName="longitude" type="number" step="0.0001" placeholder="73.0479">
+            </mat-form-field>
+          </div>
+
+          <button mat-raised-button color="accent" type="button" (click)="updateMapLocation('headquarters')" style="margin-bottom: 16px;">
+            <mat-icon>map</mat-icon>
+            Update Map Location
+          </button>
+
+          <div id="hq-map" class="map-container"></div>
         </mat-card-content>
       </mat-card>
 
@@ -152,13 +165,26 @@
                 </mat-form-field>
               </div>
 
-              <mat-form-field class="full-width">
-                <mat-label>Google Maps Embed URL</mat-label>
-                <input matInput formControlName="map_embed_url" placeholder="https://www.google.com/maps/embed?pb=...">
-                <mat-hint>Go to Google Maps → Share → Embed a map → Copy the src URL</mat-hint>
-              </mat-form-field>
+              <div class="form-row two-columns">
+                <mat-form-field>
+                  <mat-label>Latitude</mat-label>
+                  <input matInput formControlName="latitude" type="number" step="0.0001" placeholder="33.6844">
+                </mat-form-field>
 
-              <button mat-stroked-button color="warn" type="button" (click)="removeRegionalOffice(i)">
+                <mat-form-field>
+                  <mat-label>Longitude</mat-label>
+                  <input matInput formControlName="longitude" type="number" step="0.0001" placeholder="73.0479">
+                </mat-form-field>
+              </div>
+
+              <button mat-raised-button color="accent" type="button" (click)="updateMapLocation('regional', i)" style="margin-bottom: 16px;">
+                <mat-icon>map</mat-icon>
+                Update Map Location
+              </button>
+
+              <div [id]="'regional-office-map-' + i" class="map-container"></div>
+
+              <button mat-stroked-button color="warn" type="button" (click)="removeRegionalOffice(i)" style="margin-top: 16px;">
                 <mat-icon>delete</mat-icon>
                 Remove Office
               </button>
@@ -204,11 +230,24 @@
             <input matInput formControlName="phone" placeholder="(051) 9219092">
           </mat-form-field>
 
-          <mat-form-field class="full-width">
-            <mat-label>Google Maps Embed URL</mat-label>
-            <input matInput formControlName="map_embed_url" placeholder="https://www.google.com/maps/embed?pb=...">
-            <mat-hint>Go to Google Maps → Share → Embed a map → Copy the src URL</mat-hint>
-          </mat-form-field>
+          <div class="form-row two-columns">
+            <mat-form-field>
+              <mat-label>Latitude</mat-label>
+              <input matInput formControlName="latitude" type="number" step="0.0001" placeholder="33.6844">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Longitude</mat-label>
+              <input matInput formControlName="longitude" type="number" step="0.0001" placeholder="73.0479">
+            </mat-form-field>
+          </div>
+
+          <button mat-raised-button color="accent" type="button" (click)="updateMapLocation('travel')" style="margin-bottom: 16px;">
+            <mat-icon>map</mat-icon>
+            Update Map Location
+          </button>
+
+          <div id="travel-office-map" class="map-container"></div>
         </mat-card-content>
       </mat-card>
 

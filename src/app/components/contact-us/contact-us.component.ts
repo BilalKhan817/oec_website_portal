@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ApiService, ContactUs } from '../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-contact-us',
   templateUrl: './contact-us.component.html',
   styleUrls: ['./contact-us.component.css']
 })
-export class ContactUsComponent implements OnInit {
+export class ContactUsComponent implements OnInit, AfterViewInit {
   isLoading = false;
   isSaving = false;
   contentForm: FormGroup;
   currentContent: ContactUs | null = null;
   isEditMode = false;
+
+  // Maps
+  headquartersMap: L.Map | null = null;
+  travelOfficeMap: L.Map | null = null;
+  regionalOfficeMaps: Map<number, L.Map> = new Map();
 
   // Icon options for dropdowns
   sectionIcons = [
@@ -54,7 +60,8 @@ export class ContactUsComponent implements OnInit {
         address: ['', [Validators.required]],
         phone: ['', [Validators.required]],
         email: ['', [Validators.required]],
-        map_embed_url: ['']
+        latitude: [33.6844, [Validators.required]],
+        longitude: [73.0479, [Validators.required]]
       }),
       regional_offices_section: this.fb.group({
         title: ['Regional Offices', [Validators.required]],
@@ -66,7 +73,8 @@ export class ContactUsComponent implements OnInit {
         icon: ['✈️', [Validators.required]],
         address: ['', [Validators.required]],
         phone: ['', [Validators.required]],
-        map_embed_url: ['']
+        latitude: [33.6844, [Validators.required]],
+        longitude: [73.0479, [Validators.required]]
       }),
       feedback_section: this.fb.group({
         title: ['Feedback', [Validators.required]],
@@ -79,6 +87,141 @@ export class ContactUsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadContent();
+  }
+
+  ngAfterViewInit(): void {
+    // Maps will be initialized after form is loaded with data
+    setTimeout(() => {
+      this.initializeMaps();
+    }, 1000);
+  }
+
+  initializeMaps(): void {
+    // Initialize Headquarters Map
+    const hqSection = this.contentForm.get('headquarters_section')?.value;
+    if (hqSection && document.getElementById('hq-map')) {
+      this.initializeHeadquartersMap(hqSection.latitude, hqSection.longitude);
+    }
+
+    // Initialize Travel Office Map
+    const travelSection = this.contentForm.get('travel_office_section')?.value;
+    if (travelSection && document.getElementById('travel-office-map')) {
+      this.initializeTravelOfficeMap(travelSection.latitude, travelSection.longitude);
+    }
+
+    // Initialize Regional Office Maps
+    const regionalOffices = this.regionalOffices.value;
+    regionalOffices.forEach((office: any, index: number) => {
+      if (document.getElementById(`regional-office-map-${index}`)) {
+        this.initializeRegionalOfficeMap(index, office.latitude, office.longitude);
+      }
+    });
+  }
+
+  initializeHeadquartersMap(lat: number, lng: number): void {
+    if (this.headquartersMap) {
+      this.headquartersMap.remove();
+    }
+
+    this.headquartersMap = L.map('hq-map').setView([lat, lng], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(this.headquartersMap);
+
+    const customIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    L.marker([lat, lng], { icon: customIcon })
+      .addTo(this.headquartersMap)
+      .bindPopup('<b>OEC Headquarters</b>')
+      .openPopup();
+  }
+
+  initializeTravelOfficeMap(lat: number, lng: number): void {
+    if (this.travelOfficeMap) {
+      this.travelOfficeMap.remove();
+    }
+
+    this.travelOfficeMap = L.map('travel-office-map').setView([lat, lng], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(this.travelOfficeMap);
+
+    const customIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    L.marker([lat, lng], { icon: customIcon })
+      .addTo(this.travelOfficeMap)
+      .bindPopup('<b>OEC Travel Office</b>')
+      .openPopup();
+  }
+
+  initializeRegionalOfficeMap(index: number, lat: number, lng: number): void {
+    const existingMap = this.regionalOfficeMaps.get(index);
+    if (existingMap) {
+      existingMap.remove();
+    }
+
+    const map = L.map(`regional-office-map-${index}`).setView([lat, lng], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    const customIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const office = this.regionalOffices.at(index).value;
+    L.marker([lat, lng], { icon: customIcon })
+      .addTo(map)
+      .bindPopup(`<b>${office.city} Office</b>`)
+      .openPopup();
+
+    this.regionalOfficeMaps.set(index, map);
+  }
+
+  updateMapLocation(mapType: 'headquarters' | 'travel' | 'regional', index?: number): void {
+    if (mapType === 'headquarters') {
+      const hqSection = this.contentForm.get('headquarters_section')?.value;
+      if (hqSection && this.headquartersMap) {
+        this.headquartersMap.setView([hqSection.latitude, hqSection.longitude], 15);
+        this.initializeHeadquartersMap(hqSection.latitude, hqSection.longitude);
+      }
+    } else if (mapType === 'travel') {
+      const travelSection = this.contentForm.get('travel_office_section')?.value;
+      if (travelSection && this.travelOfficeMap) {
+        this.travelOfficeMap.setView([travelSection.latitude, travelSection.longitude], 15);
+        this.initializeTravelOfficeMap(travelSection.latitude, travelSection.longitude);
+      }
+    } else if (mapType === 'regional' && index !== undefined) {
+      const office = this.regionalOffices.at(index).value;
+      if (office && document.getElementById(`regional-office-map-${index}`)) {
+        this.initializeRegionalOfficeMap(index, office.latitude, office.longitude);
+      }
+    }
   }
 
   // Getter for regional offices FormArray
@@ -119,7 +262,8 @@ export class ContactUsComponent implements OnInit {
         address: content.headquarters_section?.address || '',
         phone: content.headquarters_section?.phone || '',
         email: content.headquarters_section?.email || '',
-        map_embed_url: content.headquarters_section?.map_embed_url || ''
+        latitude: content.headquarters_section?.latitude || 33.6844,
+        longitude: content.headquarters_section?.longitude || 73.0479
       },
       regional_offices_section: {
         title: content.regional_offices_section?.title || 'Regional Offices',
@@ -130,7 +274,8 @@ export class ContactUsComponent implements OnInit {
         icon: content.travel_office_section?.icon || '✈️',
         address: content.travel_office_section?.address || '',
         phone: content.travel_office_section?.phone || '',
-        map_embed_url: content.travel_office_section?.map_embed_url || ''
+        latitude: content.travel_office_section?.latitude || 33.6844,
+        longitude: content.travel_office_section?.longitude || 73.0479
       },
       feedback_section: {
         title: content.feedback_section?.title || 'Feedback',
@@ -149,7 +294,8 @@ export class ContactUsComponent implements OnInit {
           address: [office.address || '', [Validators.required]],
           phone: [office.phone || '', [Validators.required]],
           email: [office.email || '', [Validators.required]],
-          map_embed_url: [office.map_embed_url || '']
+          latitude: [office.latitude || 33.6844, [Validators.required]],
+          longitude: [office.longitude || 73.0479, [Validators.required]]
         }));
       });
     }
@@ -167,7 +313,8 @@ export class ContactUsComponent implements OnInit {
       address: ['', [Validators.required]],
       phone: ['', [Validators.required]],
       email: ['', [Validators.required]],
-      map_embed_url: ['']
+      latitude: [33.6844, [Validators.required]],
+      longitude: [73.0479, [Validators.required]]
     }));
   }
 
