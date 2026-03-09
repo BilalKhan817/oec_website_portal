@@ -152,6 +152,44 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Dynamic Field Row (phones/emails) */
+.dynamic-field-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.dynamic-field-input {
+  flex: 1;
+}
+
+.add-field-btn {
+  margin-bottom: 16px;
+  margin-top: 4px;
+}
+
+/* Contact Person Card */
+.contact-person-card {
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.contact-person-card:hover {
+  border-color: #667eea;
+}
+
+.sub-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 4px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .contact-us-container {

@@ -277,6 +277,15 @@ export interface OurFunctions {
   updatedAt?: Date;
 }
 
+export interface ContactPerson {
+  full_name: string;
+  designation: string;
+  phones: string[];
+  emails: string[];
+  phone?: string;  // backward compat
+  email?: string;  // backward compat
+}
+
 export interface ContactUs {
   _id?: string;
   page_title: string;
@@ -284,10 +293,13 @@ export interface ContactUs {
     title: string;
     icon: string;
     address: string;
-    phone: string;
-    email: string;
+    phones: string[];
+    emails: string[];
+    contact_persons?: ContactPerson[];
     latitude?: number;
     longitude?: number;
+    phone?: string;  // backward compat
+    email?: string;  // backward compat
   };
   regional_offices_section: {
     title: string;
@@ -295,19 +307,25 @@ export interface ContactUs {
     offices: {
       city: string;
       address: string;
-      phone: string;
-      email: string;
+      phones: string[];
+      emails: string[];
+      contact_persons?: ContactPerson[];
       latitude?: number;
       longitude?: number;
+      phone?: string;  // backward compat
+      email?: string;  // backward compat
     }[];
   };
   travel_office_section: {
     title: string;
     icon: string;
     address: string;
-    phone: string;
+    phones: string[];
+    emails: string[];
+    contact_persons?: ContactPerson[];
     latitude?: number;
     longitude?: number;
+    phone?: string;  // backward compat
   };
   feedback_section: {
     title: string;
@@ -324,11 +342,10 @@ export interface ContactUs {
 })
 export class ApiService {
   public MainbaseUrl = 'https://oec.gov.pk'
-   private baseUrl = 'https://oec.gov.pk/api'; 
+  private baseUrl = 'https://oec.gov.pk/api'; 
   
   // public MainbaseUrl = 'http://localhost:3000'
-  //  public baseUrl = 'http://localhost:3000/api'; // Update this to your API URL
-  // private baseUrl = 'https://oec.gov.pk/api';
+  // public baseUrl = 'http://localhost:3000/api'; 
 
 
   constructor(private http: HttpClient) {}

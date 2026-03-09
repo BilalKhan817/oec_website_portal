@@ -55,7 +55,9 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- ═══════════════════════════════════════════════ -->
       <!-- Headquarters Section -->
+      <!-- ═══════════════════════════════════════════════ -->
       <mat-card class="form-section">
         <mat-card-header>
           <mat-card-title>Headquarters Section</mat-card-title>
@@ -82,19 +84,103 @@
             <textarea matInput formControlName="address" rows="2"></textarea>
           </mat-form-field>
 
-          <div class="form-row two-columns">
-            <mat-form-field>
-              <mat-label>Phone</mat-label>
-              <input matInput formControlName="phone" placeholder="(051) 9108402">
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="email" placeholder="admin@oec.gov.pk">
-            </mat-form-field>
+          <!-- Multiple Phones -->
+          <h4>Phone Numbers</h4>
+          <div formArrayName="phones">
+            <div *ngFor="let phone of hqPhones.controls; let pi = index" class="dynamic-field-row">
+              <mat-form-field class="dynamic-field-input">
+                <mat-label>Phone {{ pi + 1 }}</mat-label>
+                <input matInput [formControlName]="pi" placeholder="(051) 9108402">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeHqPhone(pi)" [disabled]="hqPhones.length <= 1">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
           </div>
+          <button mat-stroked-button color="primary" type="button" (click)="addHqPhone()" class="add-field-btn">
+            <mat-icon>add</mat-icon> Add Phone
+          </button>
 
-          <div class="form-row two-columns">
+          <!-- Multiple Emails -->
+          <h4>Email Addresses</h4>
+          <div formArrayName="emails">
+            <div *ngFor="let email of hqEmails.controls; let ei = index" class="dynamic-field-row">
+              <mat-form-field class="dynamic-field-input">
+                <mat-label>Email {{ ei + 1 }}</mat-label>
+                <input matInput [formControlName]="ei" placeholder="admin@oec.gov.pk">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeHqEmail(ei)" [disabled]="hqEmails.length <= 1">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" type="button" (click)="addHqEmail()" class="add-field-btn">
+            <mat-icon>add</mat-icon> Add Email
+          </button>
+
+          <!-- Contact Persons -->
+          <h4>Contact Persons</h4>
+          <div formArrayName="contact_persons">
+            <div *ngFor="let cp of hqContactPersons.controls; let ci = index" [formGroupName]="ci" class="contact-person-card">
+              <div class="form-row two-columns">
+                <mat-form-field>
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="full_name" placeholder="John Doe">
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Designation</mat-label>
+                  <input matInput formControlName="designation" placeholder="Director">
+                </mat-form-field>
+              </div>
+
+              <div class="form-row two-columns">
+                <div>
+                  <label class="sub-label">Phone Numbers</label>
+                  <div formArrayName="phones">
+                    <div *ngFor="let p of getContactPersonPhones('hq', ci).controls; let pi = index" class="dynamic-field-row">
+                      <mat-form-field class="dynamic-field-input">
+                        <mat-label>Phone {{ pi + 1 }}</mat-label>
+                        <input matInput [formControlName]="pi" placeholder="(051) 9108402">
+                      </mat-form-field>
+                      <button mat-icon-button color="warn" type="button" (click)="removeContactPersonPhone('hq', ci, pi)" [disabled]="getContactPersonPhones('hq', ci).length <= 1">
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <button mat-stroked-button color="primary" type="button" (click)="addContactPersonPhone('hq', ci)" class="add-field-btn">
+                    <mat-icon>add</mat-icon> Add Phone
+                  </button>
+                </div>
+
+                <div>
+                  <label class="sub-label">Email Addresses</label>
+                  <div formArrayName="emails">
+                    <div *ngFor="let e of getContactPersonEmails('hq', ci).controls; let ei = index" class="dynamic-field-row">
+                      <mat-form-field class="dynamic-field-input">
+                        <mat-label>Email {{ ei + 1 }}</mat-label>
+                        <input matInput [formControlName]="ei" placeholder="person@oec.gov.pk">
+                      </mat-form-field>
+                      <button mat-icon-button color="warn" type="button" (click)="removeContactPersonEmail('hq', ci, ei)" [disabled]="getContactPersonEmails('hq', ci).length <= 1">
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <button mat-stroked-button color="primary" type="button" (click)="addContactPersonEmail('hq', ci)" class="add-field-btn">
+                    <mat-icon>add</mat-icon> Add Email
+                  </button>
+                </div>
+              </div>
+
+              <button mat-stroked-button color="warn" type="button" (click)="removeHqContactPerson(ci)">
+                <mat-icon>delete</mat-icon> Remove Person
+              </button>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" type="button" (click)="addHqContactPerson()" class="add-field-btn">
+            <mat-icon>person_add</mat-icon> Add Contact Person
+          </button>
+
+          <div class="form-row two-columns" style="margin-top: 16px;">
             <mat-form-field>
               <mat-label>Latitude</mat-label>
               <input matInput formControlName="latitude" type="number" step="0.0001" placeholder="33.6844">
@@ -115,7 +201,9 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- ═══════════════════════════════════════════════ -->
       <!-- Regional Offices Section -->
+      <!-- ═══════════════════════════════════════════════ -->
       <mat-card class="form-section">
         <mat-card-header>
           <mat-card-title>Regional Offices Section</mat-card-title>
@@ -153,19 +241,103 @@
                 <textarea matInput formControlName="address" rows="2"></textarea>
               </mat-form-field>
 
-              <div class="form-row two-columns">
-                <mat-form-field>
-                  <mat-label>Phone</mat-label>
-                  <input matInput formControlName="phone" placeholder="(021) 99332980">
-                </mat-form-field>
-
-                <mat-form-field>
-                  <mat-label>Email</mat-label>
-                  <input matInput formControlName="email" placeholder="admin@oec.gov.pk">
-                </mat-form-field>
+              <!-- Multiple Phones -->
+              <h4>Phone Numbers</h4>
+              <div formArrayName="phones">
+                <div *ngFor="let phone of getRegionalPhones(i).controls; let pi = index" class="dynamic-field-row">
+                  <mat-form-field class="dynamic-field-input">
+                    <mat-label>Phone {{ pi + 1 }}</mat-label>
+                    <input matInput [formControlName]="pi" placeholder="(021) 99332980">
+                  </mat-form-field>
+                  <button mat-icon-button color="warn" type="button" (click)="removeRegionalPhone(i, pi)" [disabled]="getRegionalPhones(i).length <= 1">
+                    <mat-icon>remove_circle</mat-icon>
+                  </button>
+                </div>
               </div>
+              <button mat-stroked-button color="primary" type="button" (click)="addRegionalPhone(i)" class="add-field-btn">
+                <mat-icon>add</mat-icon> Add Phone
+              </button>
 
-              <div class="form-row two-columns">
+              <!-- Multiple Emails -->
+              <h4>Email Addresses</h4>
+              <div formArrayName="emails">
+                <div *ngFor="let email of getRegionalEmails(i).controls; let ei = index" class="dynamic-field-row">
+                  <mat-form-field class="dynamic-field-input">
+                    <mat-label>Email {{ ei + 1 }}</mat-label>
+                    <input matInput [formControlName]="ei" placeholder="admin@oec.gov.pk">
+                  </mat-form-field>
+                  <button mat-icon-button color="warn" type="button" (click)="removeRegionalEmail(i, ei)" [disabled]="getRegionalEmails(i).length <= 1">
+                    <mat-icon>remove_circle</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <button mat-stroked-button color="primary" type="button" (click)="addRegionalEmail(i)" class="add-field-btn">
+                <mat-icon>add</mat-icon> Add Email
+              </button>
+
+              <!-- Contact Persons -->
+              <h4>Contact Persons</h4>
+              <div formArrayName="contact_persons">
+                <div *ngFor="let cp of getRegionalContactPersons(i).controls; let ci = index" [formGroupName]="ci" class="contact-person-card">
+                  <div class="form-row two-columns">
+                    <mat-form-field>
+                      <mat-label>Full Name</mat-label>
+                      <input matInput formControlName="full_name" placeholder="John Doe">
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Designation</mat-label>
+                      <input matInput formControlName="designation" placeholder="Regional Manager">
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-row two-columns">
+                    <div>
+                      <label class="sub-label">Phone Numbers</label>
+                      <div formArrayName="phones">
+                        <div *ngFor="let p of getRegionalContactPersonPhones(i, ci).controls; let pi = index" class="dynamic-field-row">
+                          <mat-form-field class="dynamic-field-input">
+                            <mat-label>Phone {{ pi + 1 }}</mat-label>
+                            <input matInput [formControlName]="pi" placeholder="(021) 99332980">
+                          </mat-form-field>
+                          <button mat-icon-button color="warn" type="button" (click)="removeRegionalContactPersonPhone(i, ci, pi)" [disabled]="getRegionalContactPersonPhones(i, ci).length <= 1">
+                            <mat-icon>remove_circle</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                      <button mat-stroked-button color="primary" type="button" (click)="addRegionalContactPersonPhone(i, ci)" class="add-field-btn">
+                        <mat-icon>add</mat-icon> Add Phone
+                      </button>
+                    </div>
+
+                    <div>
+                      <label class="sub-label">Email Addresses</label>
+                      <div formArrayName="emails">
+                        <div *ngFor="let e of getRegionalContactPersonEmails(i, ci).controls; let ei = index" class="dynamic-field-row">
+                          <mat-form-field class="dynamic-field-input">
+                            <mat-label>Email {{ ei + 1 }}</mat-label>
+                            <input matInput [formControlName]="ei" placeholder="person@oec.gov.pk">
+                          </mat-form-field>
+                          <button mat-icon-button color="warn" type="button" (click)="removeRegionalContactPersonEmail(i, ci, ei)" [disabled]="getRegionalContactPersonEmails(i, ci).length <= 1">
+                            <mat-icon>remove_circle</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                      <button mat-stroked-button color="primary" type="button" (click)="addRegionalContactPersonEmail(i, ci)" class="add-field-btn">
+                        <mat-icon>add</mat-icon> Add Email
+                      </button>
+                    </div>
+                  </div>
+
+                  <button mat-stroked-button color="warn" type="button" (click)="removeRegionalContactPerson(i, ci)">
+                    <mat-icon>delete</mat-icon> Remove Person
+                  </button>
+                </div>
+              </div>
+              <button mat-stroked-button color="primary" type="button" (click)="addRegionalContactPerson(i)" class="add-field-btn">
+                <mat-icon>person_add</mat-icon> Add Contact Person
+              </button>
+
+              <div class="form-row two-columns" style="margin-top: 16px;">
                 <mat-form-field>
                   <mat-label>Latitude</mat-label>
                   <input matInput formControlName="latitude" type="number" step="0.0001" placeholder="33.6844">
@@ -198,7 +370,9 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- ═══════════════════════════════════════════════ -->
       <!-- OEC Travel Office Section -->
+      <!-- ═══════════════════════════════════════════════ -->
       <mat-card class="form-section">
         <mat-card-header>
           <mat-card-title>OEC Travel Office Section</mat-card-title>
@@ -225,12 +399,103 @@
             <textarea matInput formControlName="address" rows="2"></textarea>
           </mat-form-field>
 
-          <mat-form-field class="full-width">
-            <mat-label>Phone</mat-label>
-            <input matInput formControlName="phone" placeholder="(051) 9219092">
-          </mat-form-field>
+          <!-- Multiple Phones -->
+          <h4>Phone Numbers</h4>
+          <div formArrayName="phones">
+            <div *ngFor="let phone of travelPhones.controls; let pi = index" class="dynamic-field-row">
+              <mat-form-field class="dynamic-field-input">
+                <mat-label>Phone {{ pi + 1 }}</mat-label>
+                <input matInput [formControlName]="pi" placeholder="(051) 9219092">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeTravelPhone(pi)" [disabled]="travelPhones.length <= 1">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" type="button" (click)="addTravelPhone()" class="add-field-btn">
+            <mat-icon>add</mat-icon> Add Phone
+          </button>
 
-          <div class="form-row two-columns">
+          <!-- Multiple Emails -->
+          <h4>Email Addresses</h4>
+          <div formArrayName="emails">
+            <div *ngFor="let email of travelEmails.controls; let ei = index" class="dynamic-field-row">
+              <mat-form-field class="dynamic-field-input">
+                <mat-label>Email {{ ei + 1 }}</mat-label>
+                <input matInput [formControlName]="ei" placeholder="travel@oec.gov.pk">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeTravelEmail(ei)" [disabled]="travelEmails.length <= 1">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" type="button" (click)="addTravelEmail()" class="add-field-btn">
+            <mat-icon>add</mat-icon> Add Email
+          </button>
+
+          <!-- Contact Persons -->
+          <h4>Contact Persons</h4>
+          <div formArrayName="contact_persons">
+            <div *ngFor="let cp of travelContactPersons.controls; let ci = index" [formGroupName]="ci" class="contact-person-card">
+              <div class="form-row two-columns">
+                <mat-form-field>
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="full_name" placeholder="John Doe">
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Designation</mat-label>
+                  <input matInput formControlName="designation" placeholder="Travel Manager">
+                </mat-form-field>
+              </div>
+
+              <div class="form-row two-columns">
+                <div>
+                  <label class="sub-label">Phone Numbers</label>
+                  <div formArrayName="phones">
+                    <div *ngFor="let p of getContactPersonPhones('travel', ci).controls; let pi = index" class="dynamic-field-row">
+                      <mat-form-field class="dynamic-field-input">
+                        <mat-label>Phone {{ pi + 1 }}</mat-label>
+                        <input matInput [formControlName]="pi" placeholder="(051) 9219092">
+                      </mat-form-field>
+                      <button mat-icon-button color="warn" type="button" (click)="removeContactPersonPhone('travel', ci, pi)" [disabled]="getContactPersonPhones('travel', ci).length <= 1">
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <button mat-stroked-button color="primary" type="button" (click)="addContactPersonPhone('travel', ci)" class="add-field-btn">
+                    <mat-icon>add</mat-icon> Add Phone
+                  </button>
+                </div>
+
+                <div>
+                  <label class="sub-label">Email Addresses</label>
+                  <div formArrayName="emails">
+                    <div *ngFor="let e of getContactPersonEmails('travel', ci).controls; let ei = index" class="dynamic-field-row">
+                      <mat-form-field class="dynamic-field-input">
+                        <mat-label>Email {{ ei + 1 }}</mat-label>
+                        <input matInput [formControlName]="ei" placeholder="person@oec.gov.pk">
+                      </mat-form-field>
+                      <button mat-icon-button color="warn" type="button" (click)="removeContactPersonEmail('travel', ci, ei)" [disabled]="getContactPersonEmails('travel', ci).length <= 1">
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <button mat-stroked-button color="primary" type="button" (click)="addContactPersonEmail('travel', ci)" class="add-field-btn">
+                    <mat-icon>add</mat-icon> Add Email
+                  </button>
+                </div>
+              </div>
+
+              <button mat-stroked-button color="warn" type="button" (click)="removeTravelContactPerson(ci)">
+                <mat-icon>delete</mat-icon> Remove Person
+              </button>
+            </div>
+          </div>
+          <button mat-stroked-button color="primary" type="button" (click)="addTravelContactPerson()" class="add-field-btn">
+            <mat-icon>person_add</mat-icon> Add Contact Person
+          </button>
+
+          <div class="form-row two-columns" style="margin-top: 16px;">
             <mat-form-field>
               <mat-label>Latitude</mat-label>
               <input matInput formControlName="latitude" type="number" step="0.0001" placeholder="33.6844">

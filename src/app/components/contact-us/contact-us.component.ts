@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { ApiService, ContactUs } from '../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as L from 'leaflet';
@@ -23,28 +23,28 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
 
   // Icon options for dropdowns
   sectionIcons = [
-    { value: '📝', label: '📝 Feedback/Writing' },
-    { value: '🆘', label: '🆘 SOS/Help' },
-    { value: '📞', label: '📞 Phone' },
-    { value: '📧', label: '📧 Email' },
-    { value: '💬', label: '💬 Chat/Message' },
-    { value: '📮', label: '📮 Mailbox' },
-    { value: '📬', label: '📬 Mail' },
-    { value: '📋', label: '📋 Form/Clipboard' },
-    { value: '✉️', label: '✉️ Envelope' },
-    { value: '💼', label: '💼 Business' },
-    { value: '🏢', label: '🏢 Office Building' },
-    { value: '🏛️', label: '🏛️ Government Building' },
-    { value: '📍', label: '📍 Location Pin' },
-    { value: '🗺️', label: '🗺️ Map' },
-    { value: '🌐', label: '🌐 Globe/Website' },
-    { value: '📱', label: '📱 Mobile Phone' },
-    { value: '☎️', label: '☎️ Telephone' },
-    { value: '📲', label: '📲 Mobile with Arrow' },
-    { value: '🔔', label: '🔔 Notification Bell' },
-    { value: '💡', label: '💡 Light Bulb/Idea' },
-    { value: '🕐', label: '🕐 Clock/Time' },
-    { value: '✈️', label: '✈️ Travel/Airplane' }
+    { value: '\u{1F4DD}', label: '\u{1F4DD} Feedback/Writing' },
+    { value: '\u{1F198}', label: '\u{1F198} SOS/Help' },
+    { value: '\u{1F4DE}', label: '\u{1F4DE} Phone' },
+    { value: '\u{1F4E7}', label: '\u{1F4E7} Email' },
+    { value: '\u{1F4AC}', label: '\u{1F4AC} Chat/Message' },
+    { value: '\u{1F4EE}', label: '\u{1F4EE} Mailbox' },
+    { value: '\u{1F4EC}', label: '\u{1F4EC} Mail' },
+    { value: '\u{1F4CB}', label: '\u{1F4CB} Form/Clipboard' },
+    { value: '\u2709\uFE0F', label: '\u2709\uFE0F Envelope' },
+    { value: '\u{1F4BC}', label: '\u{1F4BC} Business' },
+    { value: '\u{1F3E2}', label: '\u{1F3E2} Office Building' },
+    { value: '\u{1F3DB}\uFE0F', label: '\u{1F3DB}\uFE0F Government Building' },
+    { value: '\u{1F4CD}', label: '\u{1F4CD} Location Pin' },
+    { value: '\u{1F5FA}\uFE0F', label: '\u{1F5FA}\uFE0F Map' },
+    { value: '\u{1F310}', label: '\u{1F310} Globe/Website' },
+    { value: '\u{1F4F1}', label: '\u{1F4F1} Mobile Phone' },
+    { value: '\u260E\uFE0F', label: '\u260E\uFE0F Telephone' },
+    { value: '\u{1F4F2}', label: '\u{1F4F2} Mobile with Arrow' },
+    { value: '\u{1F514}', label: '\u{1F514} Notification Bell' },
+    { value: '\u{1F4A1}', label: '\u{1F4A1} Light Bulb/Idea' },
+    { value: '\u{1F550}', label: '\u{1F550} Clock/Time' },
+    { value: '\u2708\uFE0F', label: '\u2708\uFE0F Travel/Airplane' }
   ];
 
   constructor(
@@ -53,33 +53,36 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     private snackBar: MatSnackBar
   ) {
     this.contentForm = this.fb.group({
-      page_title: ['Get in Touch with OEC', [Validators.required]],
+      page_title: ['Get in Touch with OEC'],
       headquarters_section: this.fb.group({
-        title: ['Headquarters', [Validators.required]],
-        icon: ['🏢', [Validators.required]],
-        address: ['', [Validators.required]],
-        phone: ['', [Validators.required]],
-        email: ['', [Validators.required]],
-        latitude: [33.6844, [Validators.required]],
-        longitude: [73.0479, [Validators.required]]
+        title: ['Headquarters'],
+        icon: ['\u{1F3E2}'],
+        address: [''],
+        phones: this.fb.array([['']]),
+        emails: this.fb.array([['']]),
+        contact_persons: this.fb.array([]),
+        latitude: [33.6844],
+        longitude: [73.0479]
       }),
       regional_offices_section: this.fb.group({
-        title: ['Regional Offices', [Validators.required]],
-        icon: ['🏛️', [Validators.required]],
+        title: ['Regional Offices'],
+        icon: ['\u{1F3DB}\uFE0F'],
         offices: this.fb.array([])
       }),
       travel_office_section: this.fb.group({
-        title: ['OEC Travel Office', [Validators.required]],
-        icon: ['✈️', [Validators.required]],
-        address: ['', [Validators.required]],
-        phone: ['', [Validators.required]],
-        latitude: [33.6844, [Validators.required]],
-        longitude: [73.0479, [Validators.required]]
+        title: ['OEC Travel Office'],
+        icon: ['\u2708\uFE0F'],
+        address: [''],
+        phones: this.fb.array([['']]),
+        emails: this.fb.array([['']]),
+        contact_persons: this.fb.array([]),
+        latitude: [33.6844],
+        longitude: [73.0479]
       }),
       feedback_section: this.fb.group({
-        title: ['Feedback', [Validators.required]],
-        icon: ['📝', [Validators.required]],
-        description: ['If you need information, want to share feedback or highlight a concern, we are here. You can also drop an email to us your feedback through the form given below.', [Validators.required]]
+        title: ['Feedback'],
+        icon: ['\u{1F4DD}'],
+        description: ['If you need information, want to share feedback or highlight a concern, we are here. You can also drop an email to us your feedback through the form given below.']
       }),
       is_active: [true]
     });
@@ -96,20 +99,222 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     }, 1000);
   }
 
+  // ─── FormArray Getters ───
+
+  get hqPhones(): FormArray {
+    return this.contentForm.get('headquarters_section.phones') as FormArray;
+  }
+
+  get hqEmails(): FormArray {
+    return this.contentForm.get('headquarters_section.emails') as FormArray;
+  }
+
+  get hqContactPersons(): FormArray {
+    return this.contentForm.get('headquarters_section.contact_persons') as FormArray;
+  }
+
+  get travelPhones(): FormArray {
+    return this.contentForm.get('travel_office_section.phones') as FormArray;
+  }
+
+  get travelEmails(): FormArray {
+    return this.contentForm.get('travel_office_section.emails') as FormArray;
+  }
+
+  get travelContactPersons(): FormArray {
+    return this.contentForm.get('travel_office_section.contact_persons') as FormArray;
+  }
+
+  get regionalOffices(): FormArray {
+    return this.contentForm.get('regional_offices_section.offices') as FormArray;
+  }
+
+  // ─── Phone/Email helpers for HQ & Travel ───
+
+  addHqPhone(): void {
+    this.hqPhones.push(new FormControl(''));
+  }
+
+  removeHqPhone(index: number): void {
+    if (this.hqPhones.length > 1) this.hqPhones.removeAt(index);
+  }
+
+  addHqEmail(): void {
+    this.hqEmails.push(new FormControl(''));
+  }
+
+  removeHqEmail(index: number): void {
+    if (this.hqEmails.length > 1) this.hqEmails.removeAt(index);
+  }
+
+  addTravelPhone(): void {
+    this.travelPhones.push(new FormControl(''));
+  }
+
+  removeTravelPhone(index: number): void {
+    if (this.travelPhones.length > 1) this.travelPhones.removeAt(index);
+  }
+
+  addTravelEmail(): void {
+    this.travelEmails.push(new FormControl(''));
+  }
+
+  removeTravelEmail(index: number): void {
+    if (this.travelEmails.length > 1) this.travelEmails.removeAt(index);
+  }
+
+  // ─── Contact Persons helpers for HQ & Travel ───
+
+  createContactPersonGroup(cp?: any): FormGroup {
+    const phonesData = cp?.phones?.length ? cp.phones : (cp?.phone ? [cp.phone] : ['']);
+    const emailsData = cp?.emails?.length ? cp.emails : (cp?.email ? [cp.email] : ['']);
+    return this.fb.group({
+      full_name: [cp?.full_name || ''],
+      designation: [cp?.designation || ''],
+      phones: this.fb.array(phonesData.map((p: string) => new FormControl(p))),
+      emails: this.fb.array(emailsData.map((e: string) => new FormControl(e)))
+    });
+  }
+
+  getContactPersonPhones(section: 'hq' | 'travel', personIndex: number): FormArray {
+    const persons = section === 'hq' ? this.hqContactPersons : this.travelContactPersons;
+    return persons.at(personIndex).get('phones') as FormArray;
+  }
+
+  getContactPersonEmails(section: 'hq' | 'travel', personIndex: number): FormArray {
+    const persons = section === 'hq' ? this.hqContactPersons : this.travelContactPersons;
+    return persons.at(personIndex).get('emails') as FormArray;
+  }
+
+  addContactPersonPhone(section: 'hq' | 'travel', personIndex: number): void {
+    this.getContactPersonPhones(section, personIndex).push(new FormControl(''));
+  }
+
+  removeContactPersonPhone(section: 'hq' | 'travel', personIndex: number, phoneIndex: number): void {
+    const phones = this.getContactPersonPhones(section, personIndex);
+    if (phones.length > 1) phones.removeAt(phoneIndex);
+  }
+
+  addContactPersonEmail(section: 'hq' | 'travel', personIndex: number): void {
+    this.getContactPersonEmails(section, personIndex).push(new FormControl(''));
+  }
+
+  removeContactPersonEmail(section: 'hq' | 'travel', personIndex: number, emailIndex: number): void {
+    const emails = this.getContactPersonEmails(section, personIndex);
+    if (emails.length > 1) emails.removeAt(emailIndex);
+  }
+
+  addHqContactPerson(): void {
+    this.hqContactPersons.push(this.createContactPersonGroup());
+  }
+
+  removeHqContactPerson(index: number): void {
+    this.hqContactPersons.removeAt(index);
+  }
+
+  addTravelContactPerson(): void {
+    this.travelContactPersons.push(this.createContactPersonGroup());
+  }
+
+  removeTravelContactPerson(index: number): void {
+    this.travelContactPersons.removeAt(index);
+  }
+
+  // ─── Regional Office helpers ───
+
+  getRegionalPhones(officeIndex: number): FormArray {
+    return this.regionalOffices.at(officeIndex).get('phones') as FormArray;
+  }
+
+  getRegionalEmails(officeIndex: number): FormArray {
+    return this.regionalOffices.at(officeIndex).get('emails') as FormArray;
+  }
+
+  getRegionalContactPersons(officeIndex: number): FormArray {
+    return this.regionalOffices.at(officeIndex).get('contact_persons') as FormArray;
+  }
+
+  addRegionalPhone(officeIndex: number): void {
+    this.getRegionalPhones(officeIndex).push(new FormControl(''));
+  }
+
+  removeRegionalPhone(officeIndex: number, phoneIndex: number): void {
+    const phones = this.getRegionalPhones(officeIndex);
+    if (phones.length > 1) phones.removeAt(phoneIndex);
+  }
+
+  addRegionalEmail(officeIndex: number): void {
+    this.getRegionalEmails(officeIndex).push(new FormControl(''));
+  }
+
+  removeRegionalEmail(officeIndex: number, emailIndex: number): void {
+    const emails = this.getRegionalEmails(officeIndex);
+    if (emails.length > 1) emails.removeAt(emailIndex);
+  }
+
+  getRegionalContactPersonPhones(officeIndex: number, personIndex: number): FormArray {
+    return this.getRegionalContactPersons(officeIndex).at(personIndex).get('phones') as FormArray;
+  }
+
+  getRegionalContactPersonEmails(officeIndex: number, personIndex: number): FormArray {
+    return this.getRegionalContactPersons(officeIndex).at(personIndex).get('emails') as FormArray;
+  }
+
+  addRegionalContactPersonPhone(officeIndex: number, personIndex: number): void {
+    this.getRegionalContactPersonPhones(officeIndex, personIndex).push(new FormControl(''));
+  }
+
+  removeRegionalContactPersonPhone(officeIndex: number, personIndex: number, phoneIndex: number): void {
+    const phones = this.getRegionalContactPersonPhones(officeIndex, personIndex);
+    if (phones.length > 1) phones.removeAt(phoneIndex);
+  }
+
+  addRegionalContactPersonEmail(officeIndex: number, personIndex: number): void {
+    this.getRegionalContactPersonEmails(officeIndex, personIndex).push(new FormControl(''));
+  }
+
+  removeRegionalContactPersonEmail(officeIndex: number, personIndex: number, emailIndex: number): void {
+    const emails = this.getRegionalContactPersonEmails(officeIndex, personIndex);
+    if (emails.length > 1) emails.removeAt(emailIndex);
+  }
+
+  addRegionalContactPerson(officeIndex: number): void {
+    this.getRegionalContactPersons(officeIndex).push(this.createContactPersonGroup());
+  }
+
+  removeRegionalContactPerson(officeIndex: number, personIndex: number): void {
+    this.getRegionalContactPersons(officeIndex).removeAt(personIndex);
+  }
+
+  addRegionalOffice(): void {
+    this.regionalOffices.push(this.fb.group({
+      city: [''],
+      address: [''],
+      phones: this.fb.array([['']]),
+      emails: this.fb.array([['']]),
+      contact_persons: this.fb.array([]),
+      latitude: [33.6844],
+      longitude: [73.0479]
+    }));
+  }
+
+  removeRegionalOffice(index: number): void {
+    this.regionalOffices.removeAt(index);
+  }
+
+  // ─── Map Methods ───
+
   initializeMaps(): void {
-    // Initialize Headquarters Map
     const hqSection = this.contentForm.get('headquarters_section')?.value;
     if (hqSection && document.getElementById('hq-map')) {
       this.initializeHeadquartersMap(hqSection.latitude, hqSection.longitude);
     }
 
-    // Initialize Travel Office Map
     const travelSection = this.contentForm.get('travel_office_section')?.value;
     if (travelSection && document.getElementById('travel-office-map')) {
       this.initializeTravelOfficeMap(travelSection.latitude, travelSection.longitude);
     }
 
-    // Initialize Regional Office Maps
     const regionalOffices = this.regionalOffices.value;
     regionalOffices.forEach((office: any, index: number) => {
       if (document.getElementById(`regional-office-map-${index}`)) {
@@ -126,7 +331,7 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     this.headquartersMap = L.map('hq-map').setView([lat, lng], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+      attribution: '\u00A9 OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(this.headquartersMap);
 
@@ -153,7 +358,7 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     this.travelOfficeMap = L.map('travel-office-map').setView([lat, lng], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+      attribution: '\u00A9 OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(this.travelOfficeMap);
 
@@ -181,7 +386,7 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     const map = L.map(`regional-office-map-${index}`).setView([lat, lng], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+      attribution: '\u00A9 OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(map);
 
@@ -224,12 +429,8 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Getter for regional offices FormArray
-  get regionalOffices(): FormArray {
-    return this.contentForm.get('regional_offices_section.offices') as FormArray;
-  }
+  // ─── Data Loading ───
 
-  // Load content from API
   loadContent(): void {
     this.isLoading = true;
     this.apiService.getContactUs().subscribe({
@@ -253,74 +454,115 @@ export class ContactUsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  populateForm(content: ContactUs): void {
+  populateForm(content: any): void {
     this.contentForm.patchValue({
       page_title: content.page_title,
       headquarters_section: {
         title: content.headquarters_section?.title || 'Headquarters',
-        icon: content.headquarters_section?.icon || '🏢',
+        icon: content.headquarters_section?.icon || '\u{1F3E2}',
         address: content.headquarters_section?.address || '',
-        phone: content.headquarters_section?.phone || '',
-        email: content.headquarters_section?.email || '',
         latitude: content.headquarters_section?.latitude || 33.6844,
         longitude: content.headquarters_section?.longitude || 73.0479
       },
       regional_offices_section: {
         title: content.regional_offices_section?.title || 'Regional Offices',
-        icon: content.regional_offices_section?.icon || '🏛️'
+        icon: content.regional_offices_section?.icon || '\u{1F3DB}\uFE0F'
       },
       travel_office_section: {
         title: content.travel_office_section?.title || 'OEC Travel Office',
-        icon: content.travel_office_section?.icon || '✈️',
+        icon: content.travel_office_section?.icon || '\u2708\uFE0F',
         address: content.travel_office_section?.address || '',
-        phone: content.travel_office_section?.phone || '',
         latitude: content.travel_office_section?.latitude || 33.6844,
         longitude: content.travel_office_section?.longitude || 73.0479
       },
       feedback_section: {
         title: content.feedback_section?.title || 'Feedback',
-        icon: content.feedback_section?.icon || '📝',
+        icon: content.feedback_section?.icon || '\u{1F4DD}',
         description: content.feedback_section?.description || ''
       },
       is_active: content.is_active
     });
 
-    // Populate regional offices
-    this.regionalOffices.clear();
-    if (content.regional_offices_section?.offices) {
-      content.regional_offices_section.offices.forEach(office => {
-        this.regionalOffices.push(this.fb.group({
-          city: [office.city || '', [Validators.required]],
-          address: [office.address || '', [Validators.required]],
-          phone: [office.phone || '', [Validators.required]],
-          email: [office.email || '', [Validators.required]],
-          latitude: [office.latitude || 33.6844, [Validators.required]],
-          longitude: [office.longitude || 73.0479, [Validators.required]]
-        }));
+    // Populate HQ phones (backward compat: old data has single 'phone')
+    this.hqPhones.clear();
+    const hqPhonesData = content.headquarters_section?.phones?.length
+      ? content.headquarters_section.phones
+      : (content.headquarters_section?.phone ? [content.headquarters_section.phone] : ['']);
+    hqPhonesData.forEach((p: string) => this.hqPhones.push(new FormControl(p)));
+
+    // Populate HQ emails
+    this.hqEmails.clear();
+    const hqEmailsData = content.headquarters_section?.emails?.length
+      ? content.headquarters_section.emails
+      : (content.headquarters_section?.email ? [content.headquarters_section.email] : ['']);
+    hqEmailsData.forEach((e: string) => this.hqEmails.push(new FormControl(e)));
+
+    // Populate HQ contact persons
+    this.hqContactPersons.clear();
+    if (content.headquarters_section?.contact_persons) {
+      content.headquarters_section.contact_persons.forEach((cp: any) => {
+        this.hqContactPersons.push(this.createContactPersonGroup(cp));
       });
     }
 
+    // Populate Travel phones
+    this.travelPhones.clear();
+    const travelPhonesData = content.travel_office_section?.phones?.length
+      ? content.travel_office_section.phones
+      : (content.travel_office_section?.phone ? [content.travel_office_section.phone] : ['']);
+    travelPhonesData.forEach((p: string) => this.travelPhones.push(new FormControl(p)));
+
+    // Populate Travel emails
+    this.travelEmails.clear();
+    const travelEmailsData = content.travel_office_section?.emails?.length
+      ? content.travel_office_section.emails
+      : [''];
+    travelEmailsData.forEach((e: string) => this.travelEmails.push(new FormControl(e)));
+
+    // Populate Travel contact persons
+    this.travelContactPersons.clear();
+    if (content.travel_office_section?.contact_persons) {
+      content.travel_office_section.contact_persons.forEach((cp: any) => {
+        this.travelContactPersons.push(this.createContactPersonGroup(cp));
+      });
+    }
+
+    // Populate regional offices
+    this.regionalOffices.clear();
+    if (content.regional_offices_section?.offices) {
+      content.regional_offices_section.offices.forEach((office: any) => {
+        const phonesData = office.phones?.length
+          ? office.phones
+          : (office.phone ? [office.phone] : ['']);
+        const emailsData = office.emails?.length
+          ? office.emails
+          : (office.email ? [office.email] : ['']);
+
+        const phonesArray = this.fb.array(phonesData.map((p: string) => new FormControl(p)));
+        const emailsArray = this.fb.array(emailsData.map((e: string) => new FormControl(e)));
+
+        const contactPersonsArray = this.fb.array(
+          (office.contact_persons || []).map((cp: any) => this.createContactPersonGroup(cp))
+        );
+
+        this.regionalOffices.push(this.fb.group({
+          city: [office.city || ''],
+          address: [office.address || ''],
+          phones: phonesArray,
+          emails: emailsArray,
+          contact_persons: contactPersonsArray,
+          latitude: [office.latitude || 33.6844],
+          longitude: [office.longitude || 73.0479]
+        }));
+      });
+    }
   }
 
   initializeDefaultArrays(): void {
-    // Add default regional office
     this.addRegionalOffice();
   }
 
-  addRegionalOffice(): void {
-    this.regionalOffices.push(this.fb.group({
-      city: ['', [Validators.required]],
-      address: ['', [Validators.required]],
-      phone: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      latitude: [33.6844, [Validators.required]],
-      longitude: [73.0479, [Validators.required]]
-    }));
-  }
-
-  removeRegionalOffice(index: number): void {
-    this.regionalOffices.removeAt(index);
-  }
+  // ─── Save ───
 
   saveContent(): void {
     if (this.contentForm.valid) {
