@@ -74,6 +74,12 @@ export class EpsKoreaPageComponent implements OnInit {
     }
   }
 
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    return this.apiService.MainbaseUrl + imagePath;
+  }
+
   onSubmit(): void {
     if (this.pageForm.invalid) {
       this.snackBar.open('Please fill all required fields', 'Close', {
@@ -84,19 +90,13 @@ export class EpsKoreaPageComponent implements OnInit {
     }
 
     const formData = new FormData();
+    formData.append('title', this.pageForm.value.title || '');
+    formData.append('description', this.pageForm.value.description || '');
 
-    Object.keys(this.pageForm.value).forEach(key => {
-      const value = this.pageForm.value[key];
-      if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else if (value !== null && value !== undefined) {
-        formData.append(key, value);
-      }
-    });
-
-    Object.keys(this.selectedFiles).forEach(key => {
-      formData.append(key, this.selectedFiles[key]);
-    });
+    // Only send image file if a new file was selected
+    if (this.selectedFiles['image']) {
+      formData.append('image', this.selectedFiles['image']);
+    }
 
     this.isLoading = true;
     this.apiService.createOrUpdateEpsKoreaPage(formData).subscribe({
@@ -107,6 +107,7 @@ export class EpsKoreaPageComponent implements OnInit {
             panelClass: ['success-snackbar']
           });
           this.isEditing = false;
+          this.selectedFiles = {};
           this.loadPage();
         }
         this.isLoading = false;

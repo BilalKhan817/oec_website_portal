@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService, Announcement } from '../../services/api.service';
 import { AnnouncementDialogComponent } from './announcement-dialog/announcement-dialog.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-announcements',
@@ -14,8 +15,7 @@ import { AnnouncementDialogComponent } from './announcement-dialog/announcement-
   styleUrls: ['./announcements.component.css']
 })
 export class AnnouncementsComponent implements OnInit {
-  // Updated to include attachments column
-  displayedColumns: string[] = ['title', 'category', 'attachments', 'deadline', 'buttons', 'created', 'actions'];
+  displayedColumns: string[] = ['title', 'category', 'attachments', 'deadline', 'scheduled_date', 'buttons', 'created', 'status', 'actions'];
   dataSource = new MatTableDataSource<Announcement>();
   isLoading = false;
   baseUrl:any
@@ -35,15 +35,17 @@ export class AnnouncementsComponent implements OnInit {
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+
     // Custom filter predicate for searching through nested properties
     this.dataSource.filterPredicate = (data: Announcement, filter: string): boolean => {
       const searchStr = filter.toLowerCase();
+      const statusStr = data.is_active !== false ? 'active' : 'inactive';
       return data.title.toLowerCase().includes(searchStr) ||
              data.announcement_category.toLowerCase().includes(searchStr) ||
              data.orange_button_title.toLowerCase().includes(searchStr) ||
              (data.blue_button_title?.toLowerCase().includes(searchStr) || false) ||
-             (data.attachments?.some(att => 
+             statusStr.includes(searchStr) ||
+             (data.attachments?.some(att =>
                att.file_title.toLowerCase().includes(searchStr)
              ) || false);
     };
@@ -82,6 +84,48 @@ export class AnnouncementsComponent implements OnInit {
     this.showSnackBar('Data refreshed successfully');
   }
 
+  exportToExcel(): void {
+    const data = this.dataSource.data.map(announcement => ({
+      'Title': announcement.title,
+      'Category': announcement.announcement_category,
+      'Deadline': announcement.deadline
+        ? new Date(announcement.deadline).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          })
+        : 'No deadline',
+      'Scheduled Date': announcement.scheduled_date
+        ? new Date(announcement.scheduled_date).toLocaleString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          })
+        : 'Immediate',
+      'Status': announcement.is_active !== false ? 'Active' : 'Inactive',
+      'Orange Button Title': announcement.orange_button_title || '',
+      'Blue Button Title': announcement.blue_button_title || '',
+      'Created Date': announcement.createdAt
+        ? new Date(announcement.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          })
+        : '',
+      'Number of Attachments': announcement.attachments ? announcement.attachments.length : 0
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Announcements');
+
+    // Auto-size columns
+    if (data.length > 0) {
+      const colWidths = Object.keys(data[0]).map(key => ({
+        wch: Math.max(key.length, ...data.map(row => String(row[key as keyof typeof row]).length)) + 2
+      }));
+      worksheet['!cols'] = colWidths;
+    }
+
+    XLSX.writeFile(workbook, `Announcements_${new Date().toISOString().split('T')[0]}.xlsx`);
+    this.showSnackBar('Announcements exported successfully');
+  }
+
   openDialog(announcement?: Announcement): void {
     const dialogRef = this.dialog.open(AnnouncementDialogComponent, {
       width: '900px',
@@ -102,40 +146,32 @@ export class AnnouncementsComponent implements OnInit {
   }
 
   viewAnnouncement(announcement: Announcement): void {
-    // Open a detailed view dialog showing all announcement information
     console.log('Viewing announcement details:', announcement);
-    
-    // You can implement a detailed view dialog here
-    // Example: this.dialog.open(AnnouncementViewDialogComponent, { data: announcement });
-    
-    // For now, show basic info in snackbar
     this.showSnackBar(`Viewing: ${announcement.title}`, 'success');
   }
 
-  deleteAnnouncement(announcement: Announcement): void {
-    const hasAttachments = announcement.attachments && announcement.attachments.length > 0;
-    const hasFlag = !!announcement.flag;
-    
-    let confirmMessage = `Are you sure you want to delete "${announcement.title}"?`;
-    if (hasAttachments || hasFlag) {
-      confirmMessage += '\n\nThis will also permanently delete:';
-      if (hasFlag) confirmMessage += '\n• Banner image';
-      if (hasAttachments) confirmMessage += `\n• ${announcement.attachments!.length} attachment(s)`;
-    }
+  toggleAnnouncementStatus(announcement: Announcement): void {
+    const action = announcement.is_active !== false ? 'deactivate' : 'activate';
 
-    if (confirm(confirmMessage)) {
-      this.apiService.deleteAnnouncement(announcement._id!).subscribe({
+    if (confirm(`Are you sure you want to ${action} "${announcement.title}"?`)) {
+      this.apiService.toggleAnnouncementStatus(announcement._id!).subscribe({
         next: (response) => {
           if (response.success) {
             this.loadAnnouncements();
-            this.showSnackBar('Announcement deleted successfully');
+            this.showSnackBar(
+              `Announcement ${action}d successfully`
+            );
           }
         },
         error: (error) => {
-          console.error('Error deleting announcement:', error);
-          this.showSnackBar('Error deleting announcement', 'error');
+          console.error('Error toggling announcement status:', error);
+          this.showSnackBar('Error toggling announcement status', 'error');
+          this.loadAnnouncements(); // Refresh to reset toggle visual state
         }
       });
+    } else {
+      // User cancelled — reload to reset the toggle visual state
+      this.loadAnnouncements();
     }
   }
 
@@ -143,7 +179,7 @@ export class AnnouncementsComponent implements OnInit {
 
 getCategoryClass(category: string | null | undefined): string {
   if (!category) {
-    return 'default-category'; // or return empty string ''
+    return 'default-category';
   }
   return category.toLowerCase();
 }
@@ -151,8 +187,6 @@ getFlagClass(flag: string | null | undefined): string {
   if (!flag) {
     return 'no-flag';
   }
-  // You might want to extract category from flag path or use a different logic
-  // For now, returning a generic class
   return 'has-flag';
 }
 
@@ -160,8 +194,7 @@ getFlagClass(flag: string | null | undefined): string {
     if (attachmentType === 'link') {
       return 'link';
     }
-    
-    // Map frontend icons to Material icons
+
     switch (icon) {
       case 'advertisement': return 'campaign';
       case 'announcement': return 'notifications';
@@ -176,7 +209,7 @@ getFlagClass(flag: string | null | undefined): string {
     const now = new Date();
     const deadlineDate = new Date(deadline);
     const diffInHours = (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 0) {
       return 'expired';
     } else if (diffInHours < 24) {
@@ -194,6 +227,14 @@ getFlagClass(flag: string | null | undefined): string {
       case 'active': return 'check_circle';
       default: return 'schedule';
     }
+  }
+
+  getScheduledStatus(scheduled_date: string): string {
+    if (!scheduled_date) return 'none';
+    const now = new Date();
+    const scheduledDate = new Date(scheduled_date);
+    if (scheduledDate > now) return 'pending';
+    return 'published';
   }
 
   private showSnackBar(message: string, type: 'success' | 'error' = 'success'): void {

@@ -21,7 +21,7 @@
     <mat-card-content>
       <div class="info-section" *ngIf="pageData.image">
         <h3>Image</h3>
-        <img [src]="pageData.image" alt="EPS Korea" class="preview-img" style="max-width: 400px; height: auto;">
+        <img [src]="getImageUrl(pageData.image)" alt="EPS Korea" class="preview-img" style="max-width: 400px; height: auto;">
       </div>
 
       <div class="info-section" *ngIf="pageData.description">
@@ -57,7 +57,7 @@
 
             <div *ngIf="pageForm.get('image')?.value" class="image-preview">
               <h4>Current Image:</h4>
-              <img [src]="pageForm.get('image')?.value" class="preview-img" style="max-width: 400px; height: auto;">
+              <img [src]="getImageUrl(pageForm.get('image')?.value)" class="preview-img" style="max-width: 400px; height: auto;">
             </div>
           </div>
         </div>

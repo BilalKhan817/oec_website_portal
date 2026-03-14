@@ -8,9 +8,9 @@
       <p class="page-subtitle">Manage site announcements and notifications</p>
     </div>
     
-    <button 
-      mat-raised-button 
-      color="primary" 
+    <button
+      mat-raised-button
+      color="primary"
       class="add-button"
       (click)="openDialog()">
       <mat-icon>add</mat-icon>
@@ -25,14 +25,24 @@
           <mat-icon>list</mat-icon>
           All Announcements
         </mat-card-title>
-        
+
         <div class="header-actions">
           <mat-form-field appearance="outline" class="search-field">
             <mat-label>Search announcements...</mat-label>
             <input matInput (keyup)="applyFilter($event)" placeholder="Title, category...">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
-          
+
+          <button
+            mat-raised-button
+            class="export-button"
+            (click)="exportToExcel()"
+            [disabled]="dataSource.data.length === 0"
+            matTooltip="Export to Excel">
+            <mat-icon>download</mat-icon>
+            Export Excel
+          </button>
+
           <button mat-icon-button (click)="refreshData()" matTooltip="Refresh" class="refresh-button">
             <mat-icon>refresh</mat-icon>
           </button>
@@ -41,7 +51,7 @@
 
       <div class="table-container">
         <table mat-table [dataSource]="dataSource" matSort class="announcements-table">
-          
+
           <ng-container matColumnDef="title">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
               <mat-icon class="header-icon">title</mat-icon>
@@ -51,12 +61,6 @@
               <div class="title-content">
                 <div class="title-with-indicators">
                   <span class="title-text">{{announcement.title}}</span>
-                  <!-- <div class="content-indicators">
-                    <mat-chip class="flag-chip" *ngIf="announcement.flag">
-                      <mat-icon>image</mat-icon>
-                      Banner
-                    </mat-chip>
-                  </div> -->
                 </div>
               </div>
             </td>
@@ -69,9 +73,9 @@
             </th>
            <td mat-cell *matCellDef="let announcement">
               <div [ngClass]="getCategoryClass(announcement.announcement_category)">
-                <img *ngIf="announcement.flag" 
-                    [src]="baseUrl + '/' + announcement.flag" 
-                    alt="" 
+                <img *ngIf="announcement.flag"
+                    [src]="baseUrl + '/' + announcement.flag"
+                    alt=""
                     width="50">
                 <span *ngIf="!announcement.flag">No banner</span>
               </div>
@@ -91,12 +95,11 @@
                 </div>
                 <div *ngIf="announcement.attachments && announcement.attachments.length > 0" class="attachment-types">
                   <mat-chip class="attachment-count-chip" style="align-items: center;">
-                    <!-- <mat-icon class="deadline-status-icon">attach_file</mat-icon> -->
-                    {{announcement.attachments.length}} 
+                    {{announcement.attachments.length}}
                   </mat-chip>
                   <div class="attachment-types">
-                    <mat-icon 
-                      *ngFor="let attachment of announcement.attachments.slice(0, 3)" 
+                    <mat-icon
+                      *ngFor="let attachment of announcement.attachments.slice(0, 3)"
                       class="deadline-status-icon"
                       [matTooltip]="attachment.file_title + ' (' + (attachment.attachment_type === 'link' ? 'Link' : 'File') + ')'">
                       {{getAttachmentIcon(attachment.attachment_type, attachment.icon)}}
@@ -128,6 +131,30 @@
             </td>
           </ng-container>
 
+          <ng-container matColumnDef="scheduled_date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">event_available</mat-icon>
+              Scheduled
+            </th>
+            <td mat-cell *matCellDef="let announcement">
+              <div *ngIf="announcement.scheduled_date" class="scheduled-cell">
+                <div class="scheduled-content" [ngClass]="getScheduledStatus(announcement.scheduled_date)">
+                  <mat-icon class="deadline-status-icon">
+                    {{getScheduledStatus(announcement.scheduled_date) === 'pending' ? 'schedule_send' : 'check_circle'}}
+                  </mat-icon>
+                  <div class="deadline-info">
+                    <span class="deadline-date">{{announcement.scheduled_date | date:'MMM d, yyyy'}}</span>
+                    <span class="deadline-time">{{announcement.scheduled_date | date:'h:mm a'}}</span>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!announcement.scheduled_date" class="no-attachments">
+                <mat-icon class="no-attachment-icon">remove</mat-icon>
+                <span>Immediate</span>
+              </div>
+            </td>
+          </ng-container>
+
           <ng-container matColumnDef="buttons">
             <th mat-header-cell *matHeaderCellDef class="header-cell">
               <mat-icon class="header-icon">link</mat-icon>
@@ -137,7 +164,6 @@
               <div class="buttons-cell">
                 <div class="button-chips">
                   <mat-chip class="button-chip orange" *ngIf="announcement.orange_button_title">
-                    <!-- <mat-icon>link</mat-icon> -->
                     {{announcement.orange_button_title}}
                   </mat-chip>
                   <mat-chip class="button-chip blue" *ngIf="announcement.blue_button_title">
@@ -166,24 +192,40 @@
             </td>
           </ng-container>
 
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              <mat-icon class="header-icon">toggle_on</mat-icon>
+              Status
+            </th>
+            <td mat-cell *matCellDef="let announcement">
+              <div class="status-cell">
+                <mat-chip [ngClass]="announcement.is_active !== false ? 'status-active' : 'status-inactive'">
+                  <mat-icon class="status-icon">
+                    {{announcement.is_active !== false ? 'check_circle' : 'cancel'}}
+                  </mat-icon>
+                  {{announcement.is_active !== false ? 'Active' : 'Inactive'}}
+                </mat-chip>
+              </div>
+            </td>
+          </ng-container>
+
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="header-cell actions-header">Actions</th>
             <td mat-cell *matCellDef="let announcement" class="actions-cell">
               <div class="action-buttons">
-                <button 
-                  mat-icon-button 
+                <button
+                  mat-icon-button
                   color="primary"
                   (click)="openDialog(announcement)"
                   matTooltip="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button 
-                  mat-icon-button 
-                  color="warn"
-                  (click)="deleteAnnouncement(announcement)"
-                  matTooltip="Delete">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <mat-slide-toggle
+                  [checked]="announcement.is_active !== false"
+                  (change)="toggleAnnouncementStatus(announcement)"
+                  color="primary"
+                  [matTooltip]="announcement.is_active !== false ? 'Deactivate' : 'Activate'">
+                </mat-slide-toggle>
               </div>
             </td>
           </ng-container>
@@ -208,8 +250,8 @@
         </div>
       </div>
 
-      <mat-paginator 
-        [pageSizeOptions]="[5, 10, 20]" 
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
         showFirstLastButtons
         class="paginator">
       </mat-paginator>

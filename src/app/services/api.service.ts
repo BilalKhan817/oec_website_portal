@@ -27,6 +27,8 @@ export interface Announcement {
   _id?: string;
   title: string;
   deadline: string;
+  scheduled_date?: string;
+  is_active?: boolean;
   announcement_category: string;
   orange_button_title: string;
   orange_button_link: string;
@@ -395,6 +397,10 @@ updateAnnouncement(id: string, announcement: Partial<Announcement>): Observable<
 
 deleteAnnouncement(id: string): Observable<ApiResponse<Announcement>> {
   return this.http.delete<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}`);
+}
+
+toggleAnnouncementStatus(id: string): Observable<ApiResponse<Announcement>> {
+  return this.http.patch<ApiResponse<Announcement>>(`${this.baseUrl}/announcements/${id}/toggle`, {});
 }
 
   // Banners

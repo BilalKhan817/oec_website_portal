@@ -315,13 +315,32 @@ import { ApiService, Announcement } from '../../../services/api.service';
           <!-- Expiry Date -->
           <div class="form-field">
             <label class="field-label">
-              Expiry Date 
+              Expiry Date
             </label>
             <mat-form-field appearance="outline" class="full-width">
               <input matInput [matDatepicker]="picker" formControlName="deadline" placeholder="mm/dd/yyyy">
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
+          </div>
+
+          <!-- Scheduled Publish Date & Time -->
+          <div class="form-field">
+            <label class="field-label">
+              Scheduled Publish Date & Time <span class="optional">(Optional)</span>
+            </label>
+            <div class="scheduled-datetime-row">
+              <mat-form-field appearance="outline" class="scheduled-date-field">
+                <input matInput [matDatepicker]="scheduledPicker" formControlName="scheduled_date" placeholder="mm/dd/yyyy">
+                <mat-datepicker-toggle matSuffix [for]="scheduledPicker"></mat-datepicker-toggle>
+                <mat-datepicker #scheduledPicker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="scheduled-time-field">
+                <input matInput type="time" formControlName="scheduled_time" placeholder="HH:MM">
+                <mat-icon matSuffix>schedule</mat-icon>
+              </mat-form-field>
+            </div>
+            <span class="field-hint">If set, the announcement will only appear on the public site after this date and time.</span>
           </div>
 
           <!-- Button 1 Title (Orange Button) -->
@@ -645,6 +664,26 @@ import { ApiService, Announcement } from '../../../services/api.service';
         display: none;
       }
     }
+
+    .scheduled-datetime-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .scheduled-date-field {
+      flex: 1;
+    }
+
+    .scheduled-time-field {
+      width: 150px;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: -12px;
+    }
   `]
 })
 export class AnnouncementDialogComponent implements OnInit {
@@ -665,9 +704,20 @@ export class AnnouncementDialogComponent implements OnInit {
     this.isEditMode = !!data;
     this.existingFlagUrl = data?.flag || null;
     
+    // Parse existing scheduled_date into date and time parts
+    let scheduledDateValue: Date | string = '';
+    let scheduledTimeValue = '';
+    if (data?.scheduled_date) {
+      const sd = new Date(data.scheduled_date);
+      scheduledDateValue = sd;
+      scheduledTimeValue = sd.getHours().toString().padStart(2, '0') + ':' + sd.getMinutes().toString().padStart(2, '0');
+    }
+
     this.announcementForm = this.fb.group({
       title: [data?.title || '', [Validators.required]],
       deadline: [data?.deadline ? new Date(data.deadline) : ''],
+      scheduled_date: [scheduledDateValue],
+      scheduled_time: [scheduledTimeValue],
       announcement_category: [data?.announcement_category || '', [Validators.required]],
       orange_button_title: [data?.orange_button_title || ''],
       orange_button_link: [data?.orange_button_link || ''],
@@ -793,6 +843,19 @@ export class AnnouncementDialogComponent implements OnInit {
         ? deadline.toISOString() 
         : '';
       formData.append('deadline', deadlineString);
+
+      // Handle scheduled date + time
+      const scheduledDate = formValue.scheduled_date;
+      let scheduledDateString = '';
+      if (scheduledDate instanceof Date && !isNaN(scheduledDate.getTime())) {
+        const timeParts = formValue.scheduled_time ? formValue.scheduled_time.split(':') : [];
+        if (timeParts.length === 2) {
+          scheduledDate.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
+        }
+        scheduledDateString = scheduledDate.toISOString();
+      }
+      formData.append('scheduled_date', scheduledDateString);
+
       formData.append('announcement_category', formValue.announcement_category);
       formData.append('orange_button_title', formValue.orange_button_title);
       formData.append('orange_button_link', formValue.orange_button_link);
