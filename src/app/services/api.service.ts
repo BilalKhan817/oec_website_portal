@@ -343,11 +343,11 @@ export interface ContactUs {
   providedIn: 'root'
 })
 export class ApiService {
-  public MainbaseUrl = 'https://oec.gov.pk'
-  private baseUrl = 'https://oec.gov.pk/api'; 
+  // public MainbaseUrl = 'https://oec.gov.pk'
+  // private baseUrl = 'https://oec.gov.pk/api'; 
   
-  // public MainbaseUrl = 'http://localhost:3000'
-  // public baseUrl = 'http://localhost:3000/api'; 
+  public MainbaseUrl = 'http://localhost:3000'
+  public baseUrl = 'http://localhost:3000/api'; 
 
 
   constructor(private http: HttpClient) {}
@@ -934,14 +934,60 @@ toggleAnnouncementStatus(id: string): Observable<ApiResponse<Announcement>> {
     return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries/${id}`);
   }
 
+  // ==================== FAQs ====================
+
+  getFaqCategories(): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs`);
+  }
+
+  createFaqCategory(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/categories`, data);
+  }
+
+  updateFaqCategory(id: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/categories/${id}`, data);
+  }
+
+  deleteFaqCategory(id: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/categories/${id}`);
+  }
+
+  addFaq(categoryId: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/categories/${categoryId}/faqs`, data);
+  }
+
+  updateFaq(categoryId: string, faqId: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/categories/${categoryId}/faqs/${faqId}`, data);
+  }
+
+  deleteFaq(categoryId: string, faqId: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/categories/${categoryId}/faqs/${faqId}`);
+  }
+
+  getFaqSettings(): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/settings`);
+  }
+
+  updateFaqSettings(data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/settings`, data);
+  }
+
   // ==================== REPORTS & ANALYTICS ====================
 
-  getReportsAnalyticsPage(): Observable<ApiResponse<any>> {
+  getReportDocuments(): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.baseUrl}/reports-analytics/page`);
   }
 
-  createOrUpdateReportsAnalyticsPage(formData: FormData): Observable<ApiResponse<any>> {
+  uploadReportDocument(formData: FormData): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}/reports-analytics/page`, formData);
+  }
+
+  updateReportDocument(id: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/reports-analytics/page/${id}`, data);
+  }
+
+  deleteReportDocument(id: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/reports-analytics/page/${id}`);
   }
 
   // ==================== CONTACT US PAGES ====================

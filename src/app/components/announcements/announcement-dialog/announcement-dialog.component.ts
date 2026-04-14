@@ -914,9 +914,6 @@ export class AnnouncementDialogComponent implements OnInit {
       // Always send attachment metadata, even if empty
       formData.append('attachment_data', JSON.stringify(attachmentData));
 
-      console.log('Submitting attachments:', attachmentData);
-      console.log('File attachments count:', fileIndex);
-
       const request = this.isEditMode
         ? this.apiService.updateAnnouncementWithFiles(this.data!._id!, formData)
         : this.apiService.createAnnouncementWithFiles(formData);

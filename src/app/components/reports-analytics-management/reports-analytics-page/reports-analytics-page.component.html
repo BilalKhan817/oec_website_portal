@@ -1,1 +1,156 @@
-<p>reports-analytics-page works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">description</mat-icon>
+        Reports & Analytics Documents
+      </h1>
+      <p class="page-subtitle">Upload and manage downloadable report documents</p>
+    </div>
+  </div>
+
+  <!-- Upload Form -->
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>cloud_upload</mat-icon>
+        Upload New Document
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="upload-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="section-field">
+            <mat-label>Section Title</mat-label>
+            <input matInput #sectionInput placeholder="e.g. Emigration Statistics of Pakistan">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="title-field">
+            <mat-label>Document Title</mat-label>
+            <input matInput #titleInput placeholder="e.g. Category Wise Emigrations">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <div class="file-input-wrapper">
+            <label class="file-label">PDF File</label>
+            <button mat-stroked-button (click)="pdfInput.click()" type="button">
+              <mat-icon>picture_as_pdf</mat-icon>
+              {{ selectedPdfName || 'Choose PDF' }}
+            </button>
+            <input #pdfInput type="file" style="display:none" (change)="onPdfSelected($event)"
+                   accept=".pdf">
+          </div>
+
+          <button mat-raised-button color="primary"
+                  (click)="uploadDocument(sectionInput, titleInput, pdfInput)"
+                  [disabled]="isUploading">
+            <mat-icon>upload</mat-icon>
+            {{ isUploading ? 'Uploading...' : 'Upload' }}
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Documents Table -->
+  <mat-card class="table-card">
+    <mat-card-header class="card-header">
+      <mat-card-title>
+        <mat-icon>list</mat-icon>
+        All Documents
+      </mat-card-title>
+      <div class="header-actions">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search documents...</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Search by title or section">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-header>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="documents-table">
+
+        <ng-container matColumnDef="section">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Section</th>
+          <td mat-cell *matCellDef="let doc">
+            <mat-form-field *ngIf="editingDoc?._id === doc._id" appearance="outline" class="inline-edit-field">
+              <input matInput [(ngModel)]="editSection">
+            </mat-form-field>
+            <span *ngIf="editingDoc?._id !== doc._id">{{ doc.section }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+          <td mat-cell *matCellDef="let doc">
+            <mat-form-field *ngIf="editingDoc?._id === doc._id" appearance="outline" class="inline-edit-field">
+              <input matInput [(ngModel)]="editTitle">
+            </mat-form-field>
+            <span *ngIf="editingDoc?._id !== doc._id">{{ doc.title }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="pdf">
+          <th mat-header-cell *matHeaderCellDef>PDF</th>
+          <td mat-cell *matCellDef="let doc">
+            <div *ngIf="editingDoc?._id !== doc._id">
+              <a *ngIf="doc.pdf_url" [href]="getFileUrl(doc.pdf_url)" target="_blank"
+                 mat-button color="primary">
+                <mat-icon>picture_as_pdf</mat-icon> Download
+              </a>
+              <span *ngIf="!doc.pdf_url" class="no-file">—</span>
+            </div>
+            <div *ngIf="editingDoc?._id === doc._id" class="edit-pdf-wrapper">
+              <button mat-stroked-button (click)="editPdfInput.click()" type="button" class="edit-pdf-btn">
+                <mat-icon>picture_as_pdf</mat-icon>
+                {{ editPdfName || 'Replace PDF' }}
+              </button>
+              <input #editPdfInput type="file" style="display:none" (change)="onEditPdfSelected($event)" accept=".pdf">
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let doc">
+            <div *ngIf="editingDoc?._id !== doc._id">
+              <button mat-icon-button color="primary" (click)="startEdit(doc)"
+                      matTooltip="Edit document">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteDocument(doc)"
+                      matTooltip="Delete document">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <div *ngIf="editingDoc?._id === doc._id">
+              <button mat-icon-button color="primary" (click)="saveEdit()"
+                      matTooltip="Save changes">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button (click)="cancelEdit()"
+                      matTooltip="Cancel editing">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">description</mat-icon>
+        <h3>No Documents Found</h3>
+        <p>Upload your first document using the form above</p>
+      </div>
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
+  </mat-card>
+</div>

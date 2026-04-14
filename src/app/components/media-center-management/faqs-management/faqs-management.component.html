@@ -1,0 +1,187 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <mat-icon class="title-icon">quiz</mat-icon>
+      FAQ Management
+    </h1>
+    <p class="page-subtitle">Manage FAQ categories and questions</p>
+  </div>
+
+  <!-- Need More Help Settings -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>contact_support</mat-icon>
+        Need More Help? Section
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="settings-form">
+        <mat-form-field appearance="outline" class="settings-field">
+          <mat-label>Phone Number</mat-label>
+          <input matInput [(ngModel)]="settingsPhone" placeholder="e.g. 051-9253252">
+          <mat-icon matPrefix>phone</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="settings-field">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="settingsEmail" placeholder="e.g. info@oec.gov.pk">
+          <mat-icon matPrefix>email</mat-icon>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="saveSettings()" [disabled]="isSavingSettings">
+          <mat-icon>save</mat-icon> Save Settings
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Add Category -->
+  <mat-card class="add-category-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>add_circle</mat-icon>
+        Add New Category
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="add-category-form">
+        <mat-form-field appearance="outline" class="icon-field">
+          <mat-label>Icon</mat-label>
+          <mat-select [(ngModel)]="newCategoryIcon">
+            <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+              <i [class]="'fas ' + icon.value" style="margin-right: 8px;"></i> {{ icon.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="category-name-field">
+          <mat-label>Category Name</mat-label>
+          <input matInput [(ngModel)]="newCategoryName" placeholder="e.g. General Information"
+                 (keyup.enter)="addCategory()">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addCategory()" [disabled]="!newCategoryName.trim()">
+          <mat-icon>add</mat-icon> Add Category
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && categories.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">quiz</mat-icon>
+    <h3>No FAQ Categories Found</h3>
+    <p>Add your first category using the form above</p>
+  </div>
+
+  <!-- Categories -->
+  <mat-card *ngFor="let cat of categories" class="category-card">
+    <!-- Category Header -->
+    <mat-card-header class="category-header">
+      <div class="category-title-row" *ngIf="editingCategoryId !== cat._id">
+        <mat-icon class="cat-icon" *ngIf="cat.icon">{{ cat.icon }}</mat-icon>
+        <mat-card-title>{{ cat.name }}</mat-card-title>
+        <span class="faq-count">{{ cat.faqs?.length || 0 }} FAQs</span>
+      </div>
+      <div class="category-edit-row" *ngIf="editingCategoryId === cat._id">
+        <mat-form-field appearance="outline" class="edit-icon-field">
+          <mat-label>Icon</mat-label>
+          <mat-select [(ngModel)]="editCategoryIcon">
+            <mat-option *ngFor="let icon of iconOptions" [value]="icon.value">
+              <i [class]="'fas ' + icon.value" style="margin-right: 8px;"></i> {{ icon.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="edit-category-field">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="editCategoryName" (keyup.enter)="saveCategory()">
+        </mat-form-field>
+      </div>
+      <div class="category-actions">
+        <ng-container *ngIf="editingCategoryId !== cat._id">
+          <button mat-icon-button color="primary" (click)="startEditCategory(cat)" matTooltip="Edit category name">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="startAddFaq(cat._id)" matTooltip="Add FAQ">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteCategory(cat)" matTooltip="Delete category">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="editingCategoryId === cat._id">
+          <button mat-icon-button color="primary" (click)="saveCategory()" matTooltip="Save">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button mat-icon-button (click)="cancelEditCategory()" matTooltip="Cancel">
+            <mat-icon>close</mat-icon>
+          </button>
+        </ng-container>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Add FAQ Form -->
+      <div *ngIf="addingFaqToCategoryId === cat._id" class="add-faq-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Question</mat-label>
+          <input matInput [(ngModel)]="newQuestion" placeholder="Enter the question">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Answer</mat-label>
+          <textarea matInput [(ngModel)]="newAnswer" placeholder="Enter the answer" rows="3"></textarea>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-raised-button color="primary" (click)="addFaq()"
+                  [disabled]="!newQuestion.trim() || !newAnswer.trim()">
+            <mat-icon>add</mat-icon> Add FAQ
+          </button>
+          <button mat-stroked-button (click)="cancelAddFaq()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- FAQ List -->
+      <div class="faq-list" *ngIf="cat.faqs && cat.faqs.length > 0">
+        <div class="faq-item" *ngFor="let faq of cat.faqs">
+          <!-- View Mode -->
+          <div *ngIf="editingFaqId !== faq._id" class="faq-view">
+            <div class="faq-content">
+              <div class="faq-question-text"><strong>Q:</strong> {{ faq.question }}</div>
+              <div class="faq-answer-text"><strong>A:</strong> {{ faq.answer }}</div>
+            </div>
+            <div class="faq-actions">
+              <button mat-icon-button color="primary" (click)="startEditFaq(cat._id, faq)" matTooltip="Edit FAQ">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteFaq(cat._id, faq)" matTooltip="Delete FAQ">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div *ngIf="editingFaqId === faq._id" class="faq-edit">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Question</mat-label>
+              <input matInput [(ngModel)]="editQuestion">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Answer</mat-label>
+              <textarea matInput [(ngModel)]="editAnswer" rows="3"></textarea>
+            </mat-form-field>
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="saveEditFaq()"
+                      [disabled]="!editQuestion.trim() || !editAnswer.trim()">
+                <mat-icon>check</mat-icon> Save
+              </button>
+              <button mat-stroked-button (click)="cancelEditFaq()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!cat.faqs || cat.faqs.length === 0" class="no-faqs">
+        <p>No FAQs in this category yet. Click the + button to add one.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -57,7 +57,6 @@ export class AnnouncementsComponent implements OnInit {
     this.apiService.getAnnouncements().subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          console.log('Loaded announcements:', response.data);
           this.dataSource.data = response.data;
         }
         this.isLoading = false;
@@ -146,7 +145,6 @@ export class AnnouncementsComponent implements OnInit {
   }
 
   viewAnnouncement(announcement: Announcement): void {
-    console.log('Viewing announcement details:', announcement);
     this.showSnackBar(`Viewing: ${announcement.title}`, 'success');
   }
 
@@ -207,7 +205,8 @@ getFlagClass(flag: string | null | undefined): string {
 
   getDeadlineStatus(deadline: string): string {
     const now = new Date();
-    const deadlineDate = new Date(deadline);
+    // Treat deadline as end-of-day (add 24 hours) so status matches backend filtering
+    const deadlineDate = new Date(new Date(deadline).getTime() + 24 * 60 * 60 * 1000);
     const diffInHours = (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     if (diffInHours < 0) {

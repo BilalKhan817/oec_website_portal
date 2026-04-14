@@ -98,6 +98,18 @@ export class SidebarComponent {
           icon: 'work',
           route: '/our-functions',
           description: 'Functions & roles content'
+        },
+        {
+          title: 'Reports & Analytics',
+          icon: 'assessment',
+          route: '/reports-analytics',
+          description: 'Manage report documents'
+        },
+        {
+          title: 'FAQs',
+          icon: 'quiz',
+          route: '/media-center/faqs',
+          description: 'Manage FAQ categories & questions'
         }
       ]
     },
