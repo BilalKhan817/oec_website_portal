@@ -1,0 +1,116 @@
+.page-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.title-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.page-subtitle {
+  color: #666;
+  margin: 4px 0 0;
+}
+
+.section-card {
+  margin-bottom: 24px;
+}
+
+.add-form {
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.field-title {
+  flex: 1;
+  min-width: 200px;
+}
+
+.field-small {
+  width: 160px;
+}
+
+.add-btn {
+  white-space: nowrap;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.inline-field {
+  width: 100%;
+}
+
+.link-text {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.link-text:hover {
+  text-decoration: underline;
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+.file-pick {
+  display: flex;
+  align-items: center;
+}
+
+.file-name {
+  font-size: 13px;
+  color: #555;
+  word-break: break-all;
+}
+
+.small-btn {
+  font-size: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+}
+
+.empty-state h3 {
+  margin: 16px 0 8px;
+  color: #666;
+}

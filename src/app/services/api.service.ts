@@ -343,11 +343,11 @@ export interface ContactUs {
   providedIn: 'root'
 })
 export class ApiService {
-  // public MainbaseUrl = 'https://oec.gov.pk'
-  // private baseUrl = 'https://oec.gov.pk/api'; 
+  public MainbaseUrl = 'https://oec.gov.pk'
+  private baseUrl = 'https://oec.gov.pk/api'; 
   
-  public MainbaseUrl = 'http://localhost:3000'
-  public baseUrl = 'http://localhost:3000/api'; 
+  // public MainbaseUrl = 'http://localhost:3000'
+  // public baseUrl = 'http://localhost:3000/api'; 
 
 
   constructor(private http: HttpClient) {}
@@ -970,6 +970,40 @@ toggleAnnouncementStatus(id: string): Observable<ApiResponse<Announcement>> {
 
   updateFaqSettings(data: any): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/faqs/settings`, data);
+  }
+
+  // ==================== CAREERS ====================
+
+  getJobPostings(): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/jobs`);
+  }
+
+  createJobPosting(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/jobs`, data);
+  }
+
+  updateJobPosting(id: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/jobs/${id}`, data);
+  }
+
+  deleteJobPosting(id: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/jobs/${id}`);
+  }
+
+  getCareerForms(): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/forms`);
+  }
+
+  createCareerForm(formData: FormData): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/forms`, formData);
+  }
+
+  updateCareerForm(id: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/forms/${id}`, data);
+  }
+
+  deleteCareerForm(id: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/careers/forms/${id}`);
   }
 
   // ==================== REPORTS & ANALYTICS ====================

@@ -110,6 +110,12 @@ export class SidebarComponent {
           icon: 'quiz',
           route: '/media-center/faqs',
           description: 'Manage FAQ categories & questions'
+        },
+        {
+          title: 'Careers',
+          icon: 'work',
+          route: '/media-center/careers',
+          description: 'Manage job postings & forms'
         }
       ]
     },

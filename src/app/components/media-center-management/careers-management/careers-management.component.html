@@ -1,0 +1,236 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <mat-icon class="title-icon">work</mat-icon>
+      Careers Management
+    </h1>
+    <p class="page-subtitle">Manage job postings and downloadable forms</p>
+  </div>
+
+  <!-- ==================== JOB POSTINGS ==================== -->
+  <mat-card class="section-card">
+    <mat-card-header>
+      <mat-card-title>Job Postings</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <!-- Add Job Form -->
+      <div class="add-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="field-title">
+            <mat-label>Position Title</mat-label>
+            <input matInput [(ngModel)]="newJobTitle" placeholder="e.g. Assistant Director (IT)">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-small">
+            <mat-label>Grade / Contract</mat-label>
+            <input matInput [(ngModel)]="newJobGrade" placeholder="e.g. BPS-17">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-small">
+            <mat-label>Location</mat-label>
+            <input matInput [(ngModel)]="newJobLocation" placeholder="e.g. Islamabad">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-small">
+            <mat-label>Deadline</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="newJobDeadline">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-small">
+            <mat-label>Apply Link</mat-label>
+            <input matInput [(ngModel)]="newJobApplyLink" placeholder="https://...">
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="addJob()" class="add-btn">
+            <mat-icon>add</mat-icon> Add Job
+          </button>
+        </div>
+      </div>
+
+      <!-- Jobs Table -->
+      <table mat-table [dataSource]="jobs" class="full-width" *ngIf="jobs.length > 0">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let job">
+            <span *ngIf="editingJobId !== job._id">{{job.title}}</span>
+            <mat-form-field appearance="outline" *ngIf="editingJobId === job._id" class="inline-field">
+              <input matInput [(ngModel)]="editTitle">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="grade">
+          <th mat-header-cell *matHeaderCellDef>Grade</th>
+          <td mat-cell *matCellDef="let job">
+            <span *ngIf="editingJobId !== job._id">{{job.grade}}</span>
+            <mat-form-field appearance="outline" *ngIf="editingJobId === job._id" class="inline-field">
+              <input matInput [(ngModel)]="editGrade">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let job">
+            <span *ngIf="editingJobId !== job._id">{{job.location}}</span>
+            <mat-form-field appearance="outline" *ngIf="editingJobId === job._id" class="inline-field">
+              <input matInput [(ngModel)]="editLocation">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="deadline">
+          <th mat-header-cell *matHeaderCellDef>Deadline</th>
+          <td mat-cell *matCellDef="let job">
+            <span *ngIf="editingJobId !== job._id">{{job.deadline | date:'MMM d, yyyy'}}</span>
+            <mat-form-field appearance="outline" *ngIf="editingJobId === job._id" class="inline-field">
+              <input matInput [matDatepicker]="editPicker" [(ngModel)]="editDeadline">
+              <mat-datepicker-toggle matSuffix [for]="editPicker"></mat-datepicker-toggle>
+              <mat-datepicker #editPicker></mat-datepicker>
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="applyLink">
+          <th mat-header-cell *matHeaderCellDef>Apply Link</th>
+          <td mat-cell *matCellDef="let job">
+            <a *ngIf="editingJobId !== job._id && job.applyLink" [href]="job.applyLink" target="_blank" class="link-text">{{job.applyLink}}</a>
+            <span *ngIf="editingJobId !== job._id && !job.applyLink" class="no-data">-</span>
+            <mat-form-field appearance="outline" *ngIf="editingJobId === job._id" class="inline-field">
+              <input matInput [(ngModel)]="editApplyLink">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let job">
+            <div *ngIf="editingJobId !== job._id">
+              <button mat-icon-button color="primary" (click)="startEditJob(job)" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteJob(job)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <div *ngIf="editingJobId === job._id">
+              <button mat-icon-button color="primary" (click)="saveEditJob()" matTooltip="Save">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button (click)="cancelEditJob()" matTooltip="Cancel">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="jobColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: jobColumns;"></tr>
+      </table>
+
+      <div class="empty-state" *ngIf="jobs.length === 0">
+        <mat-icon class="empty-icon">work_off</mat-icon>
+        <h3>No job postings yet</h3>
+        <p>Add your first job posting above</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ==================== DOWNLOADABLE FORMS ==================== -->
+  <mat-card class="section-card">
+    <mat-card-header>
+      <mat-card-title>Downloadable Forms</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <!-- Add Form -->
+      <div class="add-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="field-title">
+            <mat-label>Form Title</mat-label>
+            <input matInput [(ngModel)]="newFormTitle" placeholder="e.g. Employment Application Form">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-title">
+            <mat-label>Description</mat-label>
+            <input matInput [(ngModel)]="newFormDescription" placeholder="Brief description">
+          </mat-form-field>
+          <div class="file-pick">
+            <button mat-stroked-button (click)="formFileInput.click()">
+              <mat-icon>attach_file</mat-icon> {{newFormFileName || 'Choose File'}}
+            </button>
+            <input #formFileInput type="file" hidden (change)="onFormFileSelected($event)">
+          </div>
+          <button mat-raised-button color="primary" (click)="addForm()" class="add-btn">
+            <mat-icon>add</mat-icon> Add Form
+          </button>
+        </div>
+      </div>
+
+      <!-- Forms Table -->
+      <table mat-table [dataSource]="forms" class="full-width" *ngIf="forms.length > 0">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let form">
+            <span *ngIf="editingFormId !== form._id">{{form.title}}</span>
+            <mat-form-field appearance="outline" *ngIf="editingFormId === form._id" class="inline-field">
+              <input matInput [(ngModel)]="editFormTitle">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let form">
+            <span *ngIf="editingFormId !== form._id">{{form.description}}</span>
+            <mat-form-field appearance="outline" *ngIf="editingFormId === form._id" class="inline-field">
+              <input matInput [(ngModel)]="editFormDescription">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="file">
+          <th mat-header-cell *matHeaderCellDef>File</th>
+          <td mat-cell *matCellDef="let form">
+            <span *ngIf="editingFormId !== form._id && form.file_url" class="file-name">{{getFileName(form.file_url)}}</span>
+            <span *ngIf="editingFormId !== form._id && !form.file_url" class="no-data">No file</span>
+            <div *ngIf="editingFormId === form._id" class="file-pick">
+              <button mat-stroked-button (click)="editFormFileInput.click()" class="small-btn">
+                <mat-icon>attach_file</mat-icon> {{editFormFileName || 'Replace File'}}
+              </button>
+              <input #editFormFileInput type="file" hidden (change)="onEditFormFileSelected($event)">
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let form">
+            <div *ngIf="editingFormId !== form._id">
+              <button mat-icon-button color="primary" (click)="startEditForm(form)" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteForm(form)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <div *ngIf="editingFormId === form._id">
+              <button mat-icon-button color="primary" (click)="saveEditForm()" matTooltip="Save">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button (click)="cancelEditForm()" matTooltip="Cancel">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="formColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: formColumns;"></tr>
+      </table>
+
+      <div class="empty-state" *ngIf="forms.length === 0">
+        <mat-icon class="empty-icon">description</mat-icon>
+        <h3>No downloadable forms yet</h3>
+        <p>Add your first form above</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -51,6 +51,7 @@ import { EventsManagementComponent } from './components/media-center-management/
 import { MediaResourcesManagementComponent } from './components/media-center-management/media-resources-management/media-resources-management.component';
 import { MediaGalleriesManagementComponent } from './components/media-center-management/media-galleries-management/media-galleries-management.component';
 import { FaqsManagementComponent } from './components/media-center-management/faqs-management/faqs-management.component';
+import { CareersManagementComponent } from './components/media-center-management/careers-management/careers-management.component';
 
 // Reports & Analytics Management
 import { ReportsAnalyticsPageComponent } from './components/reports-analytics-management/reports-analytics-page/reports-analytics-page.component';
@@ -115,6 +116,7 @@ const routes: Routes = [
   { path: 'media-center/media-resources', component: MediaResourcesManagementComponent },
   { path: 'media-center/media-galleries', component: MediaGalleriesManagementComponent },
   { path: 'media-center/faqs', component: FaqsManagementComponent },
+  { path: 'media-center/careers', component: CareersManagementComponent },
 
   // Reports & Analytics Management Route
   { path: 'reports-analytics', component: ReportsAnalyticsPageComponent },
