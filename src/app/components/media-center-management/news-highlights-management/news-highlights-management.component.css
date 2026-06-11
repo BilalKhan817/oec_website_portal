@@ -1,0 +1,32 @@
+.page-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+.page-header { margin-bottom: 24px; }
+.page-title { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 500; margin: 0; }
+.title-icon { font-size: 28px; width: 28px; height: 28px; }
+.page-subtitle { color: #666; margin: 4px 0 0; }
+
+.section-card { margin-bottom: 24px; }
+
+.add-form { padding-top: 16px; }
+.form-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.field-full { width: 100%; }
+.field-medium { flex: 1; min-width: 180px; }
+
+.item-card { margin-bottom: 12px; padding: 16px; }
+.item-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.item-info { flex: 1; }
+.item-title { margin: 0; font-size: 16px; font-weight: 500; }
+.item-description { color: #555; font-size: 14px; margin: 6px 0; }
+.item-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.meta-chip { background: #f0f0f0; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #555; }
+.meta-chip.project { background: #e8f5e9; color: #2e7d32; }
+.meta-chip.media { background: #fff3e0; color: #e65100; }
+.meta-link { font-size: 12px; color: #1976d2; text-decoration: none; }
+
+.item-actions { display: flex; align-items: center; }
+
+.edit-form { padding: 8px 0; }
+.edit-actions { display: flex; gap: 8px; margin-left: auto; }
+
+.empty-state { text-align: center; padding: 48px 24px; color: #999; }
+.empty-icon { font-size: 48px; width: 48px; height: 48px; color: #ccc; }
+.empty-state h3 { margin: 16px 0 8px; color: #666; }

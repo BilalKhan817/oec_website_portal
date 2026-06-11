@@ -116,6 +116,30 @@ export class SidebarComponent {
           icon: 'work',
           route: '/media-center/careers',
           description: 'Manage job postings & forms'
+        },
+        {
+          title: 'Gallery',
+          icon: 'photo_library',
+          route: '/media-center/media-galleries',
+          description: 'Manage photo & video galleries'
+        },
+        {
+          title: 'Latest Announcements',
+          icon: 'campaign',
+          route: '/media-center/latest-announcements',
+          description: 'Manage latest announcements'
+        },
+        {
+          title: 'News Highlights',
+          icon: 'article',
+          route: '/media-center/news-highlights',
+          description: 'Manage news highlights'
+        },
+        {
+          title: 'Press Releases',
+          icon: 'description',
+          route: '/media-center/press-releases',
+          description: 'Manage press releases'
         }
       ]
     },
@@ -164,9 +188,6 @@ export class SidebarComponent {
           title: 'Media Center',
           expanded: false,
           submenu: [
-            { title: 'Latest Announcements', route: '/media-center/latest-announcements' },
-            { title: 'Press Releases', route: '/media-center/press-releases' },
-            { title: 'News Highlights', route: '/media-center/news-highlights' },
             { title: 'Events', route: '/media-center/events' }
           ]
         },

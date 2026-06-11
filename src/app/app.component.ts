@@ -1,10 +1,17 @@
 // app.component.ts
 import { Component } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   template: `
-    <div class="app-container">
+    <!-- Login page: render full-screen with no sidebar/toolbar -->
+    <router-outlet *ngIf="isLoginPage"></router-outlet>
+
+    <!-- Authenticated app shell -->
+    <div class="app-container" *ngIf="!isLoginPage">
   <mat-toolbar class="app-toolbar">
     <button mat-icon-button (click)="drawer.toggle()" class="menu-button">
       <mat-icon>menu</mat-icon>
@@ -14,8 +21,9 @@ import { Component } from '@angular/core';
       OEC Admin Dashboard
     </span>
     <span class="spacer"></span>
-    <button mat-icon-button>
-      <mat-icon>account_circle</mat-icon>
+    <span class="user-name" *ngIf="auth.currentUser as user">{{ user.name || user.email }}</span>
+    <button mat-icon-button (click)="logout()" matTooltip="Logout">
+      <mat-icon>logout</mat-icon>
     </button>
   </mat-toolbar>
 
@@ -23,7 +31,7 @@ import { Component } from '@angular/core';
     <mat-sidenav #drawer class="sidenav" mode="side" opened>
       <app-sidebar></app-sidebar>
     </mat-sidenav>
-    
+
     <mat-sidenav-content class="main-content">
       <div class="content-wrapper">
         <router-outlet></router-outlet>
@@ -69,6 +77,13 @@ import { Component } from '@angular/core';
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.user-name {
+  color: white !important;
+  font-size: 0.9rem;
+  margin-right: 8px;
+  font-weight: 500;
 }
 
 .menu-button {
@@ -126,4 +141,20 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'OEC Admin Dashboard';
+  isLoginPage = false;
+
+  constructor(public auth: AuthService, private router: Router) {
+    // Track whether we are on the login route to toggle the app shell
+    this.isLoginPage = this.router.url.indexOf('/login') === 0;
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.isLoginPage = (event as NavigationEnd).urlAfterRedirects.indexOf('/login') === 0;
+      });
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 }

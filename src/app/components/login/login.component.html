@@ -1,0 +1,45 @@
+<!-- components/login/login.component.html -->
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <mat-icon class="login-logo">dashboard</mat-icon>
+      <h1>OEC Admin Portal</h1>
+      <p>Sign in to manage your website content</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <div *ngIf="errorMessage" class="login-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="you@oec.gov.pk" autocomplete="username" />
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Enter a valid email address</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password" />
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="'Toggle password visibility'">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Password must be at least 6 characters</mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" class="login-button" [disabled]="loading">
+        <mat-spinner *ngIf="loading" diameter="20" class="login-spinner"></mat-spinner>
+        <span *ngIf="!loading">Sign In</span>
+        <span *ngIf="loading">Signing in...</span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <span>Overseas Employment Corporation</span>
+    </div>
+  </div>
+</div>

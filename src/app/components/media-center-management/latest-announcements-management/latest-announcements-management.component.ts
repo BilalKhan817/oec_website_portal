@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
 
@@ -9,108 +8,140 @@ import { ApiService } from '../../../services/api.service';
   styleUrls: ['./latest-announcements-management.component.css']
 })
 export class LatestAnnouncementsManagementComponent implements OnInit {
-  pageForm: FormGroup;
-  pageData: any = null;
+  announcements: any[] = [];
   isLoading = false;
-  isEditing = false;
+
+  // Add form
+  newTitle = '';
+  newDescription = '';
+  newDate = '';
+  newCategory = '';
+  newCountry = '';
+  newLink = '';
+  newIsUrgent = false;
+
+  // Edit state
+  editingId: string | null = null;
+  editTitle = '';
+  editDescription = '';
+  editDate = '';
+  editCategory = '';
+  editCountry = '';
+  editLink = '';
+  editIsUrgent = false;
+
+  categories = ['EPS', 'Job Demand', 'Interviews', 'Fee Notice', 'Orientation', 'General'];
+  countries = ['All', 'Korea', 'KSA', 'Italy', 'Japan', 'UAE', 'Germany', 'Malaysia', 'Other'];
 
   constructor(
-    private fb: FormBuilder,
     private apiService: ApiService,
     private snackBar: MatSnackBar
-  ) {
-    this.pageForm = this.fb.group({
-      title: ['', Validators.required],
-      points: this.fb.array([])
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.loadPage();
+    this.loadAnnouncements();
   }
 
-  get points(): FormArray {
-    return this.pageForm.get('points') as FormArray;
-  }
-
-  addPoint(): void {
-    this.points.push(this.fb.control(''));
-  }
-
-  removePoint(index: number): void {
-    this.points.removeAt(index);
-  }
-
-  loadPage(): void {
+  loadAnnouncements(): void {
     this.isLoading = true;
     this.apiService.getLatestAnnouncements().subscribe({
       next: (response: any) => {
-        if (response.success && response.data && response.data.length > 0) {
-          this.pageData = response.data[0];
-          this.populateForm(response.data[0]);
-        } else {
-          this.isEditing = true;
+        if (response.success && response.data) {
+          this.announcements = response.data;
         }
         this.isLoading = false;
       },
-      error: (error: any) => {
-        console.error('Error loading page:', error);
+      error: () => {
+        this.snackBar.open('Error loading announcements', 'Close', { duration: 3000 });
         this.isLoading = false;
-        this.isEditing = true;
       }
     });
   }
 
-  populateForm(data: any): void {
-    this.pageForm.patchValue({
-      title: data.title || ''
-    });
-
-    this.points.clear();
-    if (data.points && Array.isArray(data.points)) {
-      data.points.forEach((point: string) => {
-        this.points.push(this.fb.control(point));
-      });
-    }
-  }
-
-  toggleEdit(): void {
-    this.isEditing = !this.isEditing;
-    if (!this.isEditing && this.pageData) {
-      this.populateForm(this.pageData);
-    }
-  }
-
-  onSubmit(): void {
-    if (this.pageForm.invalid) {
-      this.snackBar.open('Please fill all required fields', 'Close', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+  addAnnouncement(): void {
+    if (!this.newTitle.trim()) {
+      this.snackBar.open('Title is required', 'Close', { duration: 3000 });
       return;
     }
-
-    this.isLoading = true;
-    const data = this.pageForm.value;
-
-    this.apiService.updateLatestAnnouncement(this.pageData?._id, data).subscribe({
-      next: (response: any) => {
-        this.snackBar.open('Page saved successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.isEditing = false;
-        this.loadPage();
-        this.isLoading = false;
+    const data = {
+      title: this.newTitle,
+      description: this.newDescription,
+      date: this.newDate,
+      category: this.newCategory,
+      country: this.newCountry,
+      link: this.newLink,
+      is_urgent: this.newIsUrgent,
+      order: this.announcements.length
+    };
+    this.apiService.createLatestAnnouncement(data).subscribe({
+      next: () => {
+        this.snackBar.open('Announcement created', 'Close', { duration: 3000 });
+        this.resetAddForm();
+        this.loadAnnouncements();
       },
-      error: (error: any) => {
-        console.error('Error saving page:', error);
-        this.snackBar.open('Error saving page', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        this.isLoading = false;
+      error: () => {
+        this.snackBar.open('Error creating announcement', 'Close', { duration: 3000 });
       }
     });
+  }
+
+  startEdit(item: any): void {
+    this.editingId = item._id;
+    this.editTitle = item.title || '';
+    this.editDescription = item.description || '';
+    this.editDate = item.date || '';
+    this.editCategory = item.category || '';
+    this.editCountry = item.country || '';
+    this.editLink = item.link || '';
+    this.editIsUrgent = item.is_urgent || false;
+  }
+
+  saveEdit(item: any): void {
+    const data = {
+      title: this.editTitle,
+      description: this.editDescription,
+      date: this.editDate,
+      category: this.editCategory,
+      country: this.editCountry,
+      link: this.editLink,
+      is_urgent: this.editIsUrgent
+    };
+    this.apiService.updateLatestAnnouncement(item._id, data).subscribe({
+      next: () => {
+        this.snackBar.open('Announcement updated', 'Close', { duration: 3000 });
+        this.editingId = null;
+        this.loadAnnouncements();
+      },
+      error: () => {
+        this.snackBar.open('Error updating announcement', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+  }
+
+  deleteAnnouncement(item: any): void {
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    this.apiService.deleteLatestAnnouncement(item._id).subscribe({
+      next: () => {
+        this.snackBar.open('Announcement deleted', 'Close', { duration: 3000 });
+        this.loadAnnouncements();
+      },
+      error: () => {
+        this.snackBar.open('Error deleting announcement', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  resetAddForm(): void {
+    this.newTitle = '';
+    this.newDescription = '';
+    this.newDate = '';
+    this.newCategory = '';
+    this.newCountry = '';
+    this.newLink = '';
+    this.newIsUrgent = false;
   }
 }

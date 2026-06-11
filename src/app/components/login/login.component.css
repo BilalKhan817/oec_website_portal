@@ -1,0 +1,103 @@
+/* components/login/login.component.css */
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+  padding: 40px 32px 24px;
+  box-sizing: border-box;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-logo {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  color: #059669;
+  margin-bottom: 8px;
+}
+
+.login-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 8px 0 4px;
+  color: #111827;
+}
+
+.login-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+}
+
+.login-error mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.login-button {
+  height: 46px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 8px;
+  background: #059669 !important;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-button:disabled {
+  opacity: 0.8;
+}
+
+.login-spinner {
+  display: inline-block;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: #9ca3af;
+  font-size: 0.8rem;
+}

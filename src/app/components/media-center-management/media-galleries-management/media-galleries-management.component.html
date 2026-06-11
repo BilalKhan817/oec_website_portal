@@ -1,1 +1,186 @@
-<p>media-galleries-management works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <mat-icon class="title-icon">photo_library</mat-icon>
+      Gallery Management
+    </h1>
+    <p class="page-subtitle">Manage photo and video galleries</p>
+  </div>
+
+  <!-- Add Gallery -->
+  <mat-card class="section-card">
+    <mat-card-header>
+      <mat-card-title>Create New Gallery</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="add-form">
+        <mat-form-field appearance="outline" class="field-title">
+          <mat-label>Gallery Title</mat-label>
+          <input matInput [(ngModel)]="newTitle" placeholder="e.g. MoU Signings">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="field-small">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="newType">
+            <mat-option value="photo">Photo</mat-option>
+            <mat-option value="video">Video</mat-option>
+            <mat-option value="mixed">Mixed</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="field-title">
+          <mat-label>Description</mat-label>
+          <input matInput [(ngModel)]="newDescription" placeholder="Brief description">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addGallery()">
+          <mat-icon>add</mat-icon> Create Gallery
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Gallery List -->
+  <div *ngFor="let gallery of galleries">
+    <mat-card class="gallery-card">
+      <!-- Gallery Header -->
+      <div class="gallery-header">
+        <div class="gallery-title-row" *ngIf="editingGalleryId !== gallery._id">
+          <mat-icon class="type-icon">{{getTypeIcon(gallery.gallery_type)}}</mat-icon>
+          <div class="gallery-info">
+            <h3 class="gallery-name">{{gallery.title}}</h3>
+            <span class="gallery-meta">{{gallery.gallery_type | titlecase}} &middot; {{gallery.photos?.length || 0}} photos &middot; {{gallery.videos?.length || 0}} videos</span>
+          </div>
+        </div>
+        <div class="gallery-edit-row" *ngIf="editingGalleryId === gallery._id">
+          <mat-form-field appearance="outline" class="edit-field">
+            <mat-label>Title</mat-label>
+            <input matInput [(ngModel)]="editTitle">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="edit-field">
+            <mat-label>Description</mat-label>
+            <input matInput [(ngModel)]="editDescription">
+          </mat-form-field>
+        </div>
+        <div class="gallery-actions">
+          <ng-container *ngIf="editingGalleryId !== gallery._id">
+            <button mat-icon-button (click)="toggleExpand(gallery._id)" [matTooltip]="expandedGalleryId === gallery._id ? 'Collapse' : 'Expand'">
+              <mat-icon>{{expandedGalleryId === gallery._id ? 'expand_less' : 'expand_more'}}</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="startEditGallery(gallery)" matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteGallery(gallery)" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-container>
+          <ng-container *ngIf="editingGalleryId === gallery._id">
+            <button mat-icon-button color="primary" (click)="saveEditGallery(gallery)" matTooltip="Save">
+              <mat-icon>check</mat-icon>
+            </button>
+            <button mat-icon-button (click)="cancelEditGallery()" matTooltip="Cancel">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Expanded Content -->
+      <div class="gallery-content" *ngIf="expandedGalleryId === gallery._id">
+
+        <!-- Photos Section -->
+        <div class="content-section" *ngIf="gallery.gallery_type === 'photo' || gallery.gallery_type === 'mixed'">
+          <div class="section-header">
+            <h4>Photos</h4>
+            <button mat-stroked-button color="primary" (click)="showAddPhoto(gallery._id)" *ngIf="addingPhotoToId !== gallery._id">
+              <mat-icon>add_photo_alternate</mat-icon> Add Photo
+            </button>
+          </div>
+
+          <!-- Add Photo Form -->
+          <div class="add-item-form" *ngIf="addingPhotoToId === gallery._id">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Caption</mat-label>
+              <input matInput [(ngModel)]="photoCaption" placeholder="Photo caption">
+            </mat-form-field>
+            <div class="file-row">
+              <button mat-stroked-button (click)="photoInput.click()">
+                <mat-icon>image</mat-icon> {{photoFileName || 'Choose Image'}}
+              </button>
+              <input #photoInput type="file" hidden accept="image/*" (change)="onPhotoSelected($event)">
+            </div>
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="addPhoto(gallery._id)">Add</button>
+              <button mat-button (click)="cancelAddPhoto()">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Photo Grid -->
+          <div class="photo-grid" *ngIf="gallery.photos?.length > 0">
+            <div class="photo-item" *ngFor="let photo of gallery.photos">
+              <img [src]="getImageUrl(photo.image_url)" [alt]="photo.caption" class="photo-thumb">
+              <div class="photo-details">
+                <span class="photo-caption">{{photo.caption || 'No caption'}}</span>
+                <button mat-icon-button color="warn" (click)="deletePhoto(gallery._id, photo._id)" matTooltip="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="no-items" *ngIf="!gallery.photos?.length">No photos yet</p>
+        </div>
+
+        <!-- Videos Section -->
+        <div class="content-section" *ngIf="gallery.gallery_type === 'video' || gallery.gallery_type === 'mixed'">
+          <div class="section-header">
+            <h4>Videos</h4>
+            <button mat-stroked-button color="primary" (click)="showAddVideo(gallery._id)" *ngIf="addingVideoToId !== gallery._id">
+              <mat-icon>video_call</mat-icon> Add Video
+            </button>
+          </div>
+
+          <!-- Add Video Form -->
+          <div class="add-item-form" *ngIf="addingVideoToId === gallery._id">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Video Embed URL</mat-label>
+              <input matInput [(ngModel)]="videoUrl" placeholder="https://www.youtube.com/embed/...">
+            </mat-form-field>
+            <div class="form-row-inline">
+              <mat-form-field appearance="outline" class="field-title">
+                <mat-label>Caption</mat-label>
+                <input matInput [(ngModel)]="videoCaption" placeholder="Video caption">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="field-small">
+                <mat-label>Duration</mat-label>
+                <input matInput [(ngModel)]="videoDuration" placeholder="e.g. 5:32">
+              </mat-form-field>
+            </div>
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="addVideo(gallery._id)">Add</button>
+              <button mat-button (click)="cancelAddVideo()">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Video List -->
+          <div class="video-list" *ngIf="gallery.videos?.length > 0">
+            <div class="video-item" *ngFor="let video of gallery.videos">
+              <mat-icon class="video-icon">play_circle</mat-icon>
+              <div class="video-details">
+                <span class="video-caption">{{video.caption || video.video_url}}</span>
+                <span class="video-duration" *ngIf="video.duration">{{video.duration}}</span>
+              </div>
+              <button mat-icon-button color="warn" (click)="deleteVideo(gallery._id, video._id)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <p class="no-items" *ngIf="!gallery.videos?.length">No videos yet</p>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="galleries.length === 0">
+    <mat-icon class="empty-icon">photo_library</mat-icon>
+    <h3>No galleries yet</h3>
+    <p>Create your first gallery above</p>
+  </div>
+</div>

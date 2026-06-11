@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+// Auth
+import { LoginComponent } from './components/login/login.component';
+import { AuthGuard } from './guards/auth.guard';
+
 // Old Dashboard Components
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AnnouncementsComponent } from './components/announcements/announcements.component';
@@ -65,7 +69,7 @@ import { ContactFormPageComponent } from './components/contact-us-management/con
 // Navbar Management
 import { NavbarManagementComponent } from './components/navbar-management/navbar-management.component';
 
-const routes: Routes = [
+const appRoutes: Routes = [
   // Old Dashboard Routes
   { path: 'dashboard', component: DashboardComponent },
   { path: 'announcements', component: AnnouncementsComponent },
@@ -130,7 +134,16 @@ const routes: Routes = [
   // Navbar Management Route
   { path: 'navbar-management', component: NavbarManagementComponent },
 
-  // Default route
+];
+
+const routes: Routes = [
+  // Public login route
+  { path: 'login', component: LoginComponent },
+
+  // Every content route is protected by the auth guard
+  ...appRoutes.map(route => (route.component ? { ...route, canActivate: [AuthGuard] } : route)),
+
+  // Default routes (dashboard itself is guarded, so this funnels to login when logged out)
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 ];

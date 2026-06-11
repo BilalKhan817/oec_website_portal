@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
 
@@ -9,109 +8,139 @@ import { ApiService } from '../../../services/api.service';
   styleUrls: ['./press-releases-management.component.css']
 })
 export class PressReleasesManagementComponent implements OnInit {
-  pageForm: FormGroup;
-  pageData: any = null;
+  pressReleases: any[] = [];
   isLoading = false;
-  isEditing = false;
+
+  // Add form
+  newHeadline = '';
+  newSummary = '';
+  newDate = '';
+  newCategory = '';
+  newPdfLink = '';
+  newReadLink = '';
+  newIsUrgent = false;
+
+  // Edit state
+  editingId: string | null = null;
+  editHeadline = '';
+  editSummary = '';
+  editDate = '';
+  editCategory = '';
+  editPdfLink = '';
+  editReadLink = '';
+  editIsUrgent = false;
+
+  categories = ['Agreement', 'Advisory', 'Innovation', 'Policy', 'Partnership', 'General'];
 
   constructor(
-    private fb: FormBuilder,
     private apiService: ApiService,
     private snackBar: MatSnackBar
-  ) {
-    this.pageForm = this.fb.group({
-      points: this.fb.array([])
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.loadPage();
+    this.loadPressReleases();
   }
 
-  get points(): FormArray {
-    return this.pageForm.get('points') as FormArray;
-  }
-
-  addPoint(): void {
-    this.points.push(this.fb.group({
-      title: [''],
-      date: ['']
-    }));
-  }
-
-  removePoint(index: number): void {
-    this.points.removeAt(index);
-  }
-
-  loadPage(): void {
+  loadPressReleases(): void {
     this.isLoading = true;
     this.apiService.getPressReleases().subscribe({
       next: (response: any) => {
-        if (response.success && response.data && response.data.length > 0) {
-          this.pageData = response.data[0];
-          this.populateForm(response.data[0]);
-        } else {
-          this.isEditing = true;
+        if (response.success && response.data) {
+          this.pressReleases = response.data;
         }
         this.isLoading = false;
       },
-      error: (error: any) => {
-        console.error('Error loading page:', error);
+      error: () => {
+        this.snackBar.open('Error loading press releases', 'Close', { duration: 3000 });
         this.isLoading = false;
-        this.isEditing = true;
       }
     });
   }
 
-  populateForm(data: any): void {
-    this.points.clear();
-    if (data.points && Array.isArray(data.points)) {
-      data.points.forEach((point: any) => {
-        this.points.push(this.fb.group({
-          title: [point.title || ''],
-          date: [point.date || '']
-        }));
-      });
-    }
-  }
-
-  toggleEdit(): void {
-    this.isEditing = !this.isEditing;
-    if (!this.isEditing && this.pageData) {
-      this.populateForm(this.pageData);
-    }
-  }
-
-  onSubmit(): void {
-    if (this.pageForm.invalid) {
-      this.snackBar.open('Please fill all required fields', 'Close', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+  addPressRelease(): void {
+    if (!this.newHeadline.trim()) {
+      this.snackBar.open('Headline is required', 'Close', { duration: 3000 });
       return;
     }
-
-    this.isLoading = true;
-    const data = this.pageForm.value;
-
-    this.apiService.updatePressRelease(this.pageData?._id, data).subscribe({
-      next: (response: any) => {
-        this.snackBar.open('Page saved successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.isEditing = false;
-        this.loadPage();
-        this.isLoading = false;
+    const data = {
+      headline: this.newHeadline,
+      summary: this.newSummary,
+      date: this.newDate,
+      category: this.newCategory,
+      pdf_link: this.newPdfLink,
+      read_link: this.newReadLink,
+      is_urgent: this.newIsUrgent,
+      order: this.pressReleases.length
+    };
+    this.apiService.createPressRelease(data).subscribe({
+      next: () => {
+        this.snackBar.open('Press release created', 'Close', { duration: 3000 });
+        this.resetAddForm();
+        this.loadPressReleases();
       },
-      error: (error: any) => {
-        console.error('Error saving page:', error);
-        this.snackBar.open('Error saving page', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        this.isLoading = false;
+      error: () => {
+        this.snackBar.open('Error creating press release', 'Close', { duration: 3000 });
       }
     });
+  }
+
+  startEdit(item: any): void {
+    this.editingId = item._id;
+    this.editHeadline = item.headline || '';
+    this.editSummary = item.summary || '';
+    this.editDate = item.date || '';
+    this.editCategory = item.category || '';
+    this.editPdfLink = item.pdf_link || '';
+    this.editReadLink = item.read_link || '';
+    this.editIsUrgent = item.is_urgent || false;
+  }
+
+  saveEdit(item: any): void {
+    const data = {
+      headline: this.editHeadline,
+      summary: this.editSummary,
+      date: this.editDate,
+      category: this.editCategory,
+      pdf_link: this.editPdfLink,
+      read_link: this.editReadLink,
+      is_urgent: this.editIsUrgent
+    };
+    this.apiService.updatePressRelease(item._id, data).subscribe({
+      next: () => {
+        this.snackBar.open('Press release updated', 'Close', { duration: 3000 });
+        this.editingId = null;
+        this.loadPressReleases();
+      },
+      error: () => {
+        this.snackBar.open('Error updating press release', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+  }
+
+  deletePressRelease(item: any): void {
+    if (!confirm('Are you sure you want to delete this press release?')) return;
+    this.apiService.deletePressRelease(item._id).subscribe({
+      next: () => {
+        this.snackBar.open('Press release deleted', 'Close', { duration: 3000 });
+        this.loadPressReleases();
+      },
+      error: () => {
+        this.snackBar.open('Error deleting press release', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  resetAddForm(): void {
+    this.newHeadline = '';
+    this.newSummary = '';
+    this.newDate = '';
+    this.newCategory = '';
+    this.newPdfLink = '';
+    this.newReadLink = '';
+    this.newIsUrgent = false;
   }
 }

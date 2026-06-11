@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -99,6 +99,10 @@ import { ContactFormPageComponent } from './components/contact-us-management/con
 import { AppRoutingModule } from './app-routing.module';
 import { NavbarManagementComponent } from './components/navbar-management/navbar-management.component';
 
+// Auth
+import { LoginComponent } from './components/login/login.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+
 const routes:any = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
@@ -176,6 +180,7 @@ const routes:any = [
     RegionalOfficesManagementComponent,
     ContactFormPageComponent,
     NavbarManagementComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -214,7 +219,12 @@ const routes:any = [
     MatExpansionModule
   ],
   providers: [
-    ApiService
+    ApiService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

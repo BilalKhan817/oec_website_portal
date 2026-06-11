@@ -810,65 +810,65 @@ toggleAnnouncementStatus(id: string): Observable<ApiResponse<Announcement>> {
 
   // Latest Announcements (Dynamic CRUD)
   getLatestAnnouncements(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/latest-announcements`);
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/latest-announcements-page`);
   }
 
   getLatestAnnouncement(id: string): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements/${id}`);
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements-page/${id}`);
   }
 
-  createLatestAnnouncement(formData: FormData): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements`, formData);
+  createLatestAnnouncement(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements-page`, data);
   }
 
   updateLatestAnnouncement(id: string, data: any): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements/${id}`, data);
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements-page/${id}`, data);
   }
 
   deleteLatestAnnouncement(id: string): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements/${id}`);
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/latest-announcements-page/${id}`);
   }
 
   // Press Releases (Dynamic CRUD)
   getPressReleases(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/press-releases`);
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/press-releases-page`);
   }
 
   getPressRelease(id: string): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases/${id}`);
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases-page/${id}`);
   }
 
-  createPressRelease(formData: FormData): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases`, formData);
+  createPressRelease(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases-page`, data);
   }
 
   updatePressRelease(id: string, data: any): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases/${id}`, data);
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases-page/${id}`, data);
   }
 
   deletePressRelease(id: string): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases/${id}`);
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/press-releases-page/${id}`);
   }
 
   // News Highlights (Dynamic CRUD)
   getNewsHighlights(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/news-highlights`);
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/news-highlights-page`);
   }
 
   getNewsHighlight(id: string): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights/${id}`);
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights-page/${id}`);
   }
 
-  createNewsHighlight(formData: FormData): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights`, formData);
+  createNewsHighlight(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights-page`, data);
   }
 
   updateNewsHighlight(id: string, data: any): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights/${id}`, data);
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights-page/${id}`, data);
   }
 
   deleteNewsHighlight(id: string): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights/${id}`);
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/news-highlights-page/${id}`);
   }
 
   // Events (Dynamic CRUD)
@@ -915,23 +915,39 @@ toggleAnnouncementStatus(id: string): Observable<ApiResponse<Announcement>> {
 
   // Media Galleries (Dynamic CRUD)
   getMediaGalleries(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/media-galleries`);
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/media-center/media-galleries-page`);
   }
 
   getMediaGallery(id: string): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries/${id}`);
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${id}`);
   }
 
   createMediaGallery(formData: FormData): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries`, formData);
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page`, formData);
   }
 
   updateMediaGallery(id: string, formData: FormData): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries/${id}`, formData);
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${id}`, formData);
   }
 
   deleteMediaGallery(id: string): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries/${id}`);
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${id}`);
+  }
+
+  addGalleryPhoto(galleryId: string, formData: FormData): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${galleryId}/photos`, formData);
+  }
+
+  deleteGalleryPhoto(galleryId: string, photoId: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${galleryId}/photos/${photoId}`);
+  }
+
+  addGalleryVideo(galleryId: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${galleryId}/videos`, data);
+  }
+
+  deleteGalleryVideo(galleryId: string, videoId: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/media-center/media-galleries-page/${galleryId}/videos/${videoId}`);
   }
 
   // ==================== FAQs ====================
